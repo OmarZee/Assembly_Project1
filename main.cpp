@@ -11,11 +11,12 @@ void instruction(string str, string opcode, char type)
     string rs1 = "00000";
     string rs2 = "00000";
     string func7 = "0000000";
+    int j;
 
     if (type == 'R') //R-type instruction format
     {
         //getting rd
-        int j = 0;
+        j = 0;
         for (int i = 20 ; i < 25; i++) //getting rd value
         {
             rd[j] = str[i];
@@ -24,7 +25,7 @@ void instruction(string str, string opcode, char type)
         cout << "rd = " << rd << endl;
 
         //getting func3
-        int j = 0;
+        j = 0;
         for (int i = 17 ; i < 20; i++) //getting func3 value
         {
             func3[j] = str[i];
@@ -33,7 +34,7 @@ void instruction(string str, string opcode, char type)
         cout << "func3 = " << func3 << endl;
 
         //getting rs1
-        int j = 0;
+        j = 0;
         for (int i = 19 ; i < 17; i++) //rs1 value
         {
             rs1[j] = str[i];
@@ -42,7 +43,7 @@ void instruction(string str, string opcode, char type)
         cout << "rs1 = " << rs1 << endl;
 
         //getting rs2
-        int j = 0;
+        j = 0;
         for (int i = 7 ; i < 12; i++) //getting rs2 value
         {
             rs2[j] = str[i];
@@ -51,7 +52,7 @@ void instruction(string str, string opcode, char type)
         cout << "rs2 = " << rs2 << endl;
 
         //getting func7
-        int j = 0;
+        j = 0;
         for (int i = 0 ; i < 7; i++) //getting func3 value
         {
             func7[j] = str[i];
@@ -65,7 +66,7 @@ void instruction(string str, string opcode, char type)
     if (type == 'I') //I-type instruction format
     {
         //getting rd
-        int j = 0;
+        j = 0;
         for (int i = 20 ; i < 25; i++) //getting rd value
         {
             rd[j] = str[i];
@@ -74,7 +75,7 @@ void instruction(string str, string opcode, char type)
         cout << "rd = " << rd << endl;
 
         //getting func3
-        int j = 0;
+        j = 0;
         for (int i = 17 ; i < 20; i++) //getting func3 value
         {
             func3[j] = str[i];
@@ -83,7 +84,7 @@ void instruction(string str, string opcode, char type)
         cout << "func3 = " << func3 << endl;
 
         //getting rs1
-        int j = 0;
+        j = 0;
         for (int i = 19 ; i < 17; i++) //rs1 value
         {
             rs1[j] = str[i];
@@ -92,7 +93,7 @@ void instruction(string str, string opcode, char type)
         cout << "rs1 = " << rs1 << endl;
 
         //getting immediate
-        int j = 0;
+        j = 0;
         string immediate = "0000000";
         for (int i = 0 ; i < 7; i++) //getting func3 value
         {
@@ -108,7 +109,7 @@ void instruction(string str, string opcode, char type)
     if (type == 'S') //S-type instruction format
     {
         //getting imm1[4:0]
-        int j = 0;
+        j = 0;
         string imm1 = "00000";
         for (int i = 20 ; i < 25; i++) //getting imm1 value
         {
@@ -118,7 +119,7 @@ void instruction(string str, string opcode, char type)
         cout << "imm[4:0] = " << imm1 << endl;
 
         //getting func3
-        int j = 0;
+        j = 0;
         for (int i = 17 ; i < 20; i++) //getting func3 value
         {
             func3[j] = str[i];
@@ -127,7 +128,7 @@ void instruction(string str, string opcode, char type)
         cout << "func3 = " << func3 << endl;
 
         //getting rs1
-        int j = 0;
+        j = 0;
         for (int i = 19 ; i < 17; i++) //rs1 value
         {
             rs1[j] = str[i];
@@ -136,7 +137,7 @@ void instruction(string str, string opcode, char type)
         cout << "rs1 = " << rs1 << endl;
 
         //getting rs2
-        int j = 0;
+        j = 0;
         for (int i = 7 ; i < 12; i++) //getting rs2 value
         {
             rs2[j] = str[i];
@@ -146,6 +147,7 @@ void instruction(string str, string opcode, char type)
 
         //getting imm2[11:5]
         string imm2 = "0000000";
+        j = 0;
         for (int i = 0 ; i < 7; i++) //getting imm2 value
         {
             imm2[j] = str[i];
@@ -169,7 +171,7 @@ void instruction(string str, string opcode, char type)
         cout << "imm[4:1|11] = " << imm1 << endl;
 
         //getting func3
-        int j = 0;
+        j = 0;
         for (int i = 17 ; i < 20; i++) //getting func3 value
         {
             func3[j] = str[i];
@@ -178,7 +180,7 @@ void instruction(string str, string opcode, char type)
         cout << "func3 = " << func3 << endl;
 
         //getting rs1
-        int j = 0;
+        j = 0;
         for (int i = 19 ; i < 17; i++) //rs1 value
         {
             rs1[j] = str[i];
@@ -187,7 +189,7 @@ void instruction(string str, string opcode, char type)
         cout << "rs1 = " << rs1 << endl;
 
         //getting rs2
-        int j = 0;
+        j = 0;
         for (int i = 7 ; i < 12; i++) //getting rs2 value
         {
             rs2[j] = str[i];
