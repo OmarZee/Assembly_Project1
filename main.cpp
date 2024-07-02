@@ -135,7 +135,7 @@ void instruction(string str, string opcode, char type)
 
         //getting rs1
         j = 0;
-        for (int i = 19 ; i < 17; i++) //rs1 value
+        for (int i = 12 ; i < 17; i++) //rs1 value
         {
             rs1[j] = str[i];
             j++;
@@ -179,7 +179,7 @@ void instruction(string str, string opcode, char type)
 
         //getting rs1
         j = 0;
-        for (int i = 19 ; i < 17; i++) //rs1 value
+        for (int i = 12 ; i < 17; i++) //rs1 value
         {
             rs1[j] = str[i];
             j++;
@@ -231,7 +231,7 @@ void instruction(string str, string opcode, char type)
 
         //getting rs1
         j = 0;
-        for (int i = 19 ; i < 17; i++) //rs1 value
+        for (int i = 12 ; i < 17; i++) //rs1 value
         {
             rs1[j] = str[i];
             j++;
