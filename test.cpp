@@ -278,7 +278,6 @@ void decode(string str)
     {
         cout << "R-type" << endl;
         type = 'R';
-        instruction(str, opcode, type);
     }
     else if (opcode == "0010011" || opcode == "0000011" || opcode == "1100111" || opcode == "1110011")
     {
@@ -320,7 +319,7 @@ void decode(string str)
 
 int main()
 {
-    ifstream file("C:/Users/omars/OneDrive/Desktop/Uni/AUC/Summer 24/Assembly/Project 1/Assembly_Project1/machinecode.txt");
+    ifstream file("machinecode.txt");
     string array[100];
 
     cout << endl;
@@ -355,7 +354,7 @@ int main()
     string str;
     str=array[0];
     decode(str);
-    cout << "*****************************************************************" <<endl;
+    cout << "*" <<endl;
     // for(int i=0; i<str.size(); i++)
     // {
     //     cout << str[i] << endl;
