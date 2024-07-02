@@ -4,6 +4,56 @@
 
 using namespace std;
 
+void Rtype(string opcode, string rd, string func3, string rs1, string rs2, string func7)
+{
+    if (func3 == "000") //func3 = 0
+    {
+        if (func7 == "000000") //ADD
+        {
+
+        }
+        else //SUB
+        {
+
+        }
+    }
+    else if (func3 == "001") //func3 = 1
+    {
+        
+    }
+    else if (func3 == "010") //func3 = 2
+    {
+        
+    }
+    else if (func3 == "011") //func3 = 3
+    {
+        
+    }
+    else if (func3 == "100") //func3 = 4
+    {
+        
+    }
+    else if (func3 == "101") //func3 = 5
+    {
+        if (func7 == "000000") //SRL
+        {
+
+        }
+        else //SRA
+        {
+
+        }
+    }
+    else if (func3 == "110") //func3 = 6
+    {
+        
+    }
+    else if (func3 == "111") //func3 = 7
+    {
+        
+    }
+}
+
 void instruction(string str, string opcode, char type)
 {
     string func3 = "000";
@@ -60,7 +110,7 @@ void instruction(string str, string opcode, char type)
         }
         cout << "func7 = " << func7 << endl;
 
-        //Rtype(opcode, rd, func3, rs1, rs2, func7);
+        Rtype(opcode, rd, func3, rs1, rs2, func7);
     }
 
     if (type == 'I') //I-type instruction format
@@ -94,8 +144,8 @@ void instruction(string str, string opcode, char type)
 
         //getting immediate
         j = 0;
-        string immediate = "0000000";
-        for (int i = 0 ; i < 7; i++) //getting func3 value
+        string immediate = "000000000000";
+        for (int i = 0 ; i < 11; i++) //getting func3 value
         {
             immediate[j] = str[i];
             j++;
