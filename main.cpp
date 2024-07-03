@@ -254,7 +254,7 @@ void Itype(string opcode, int rd_decimal, string func3, int rs1_decimal, int imm
         }
         else if (func3 == "100") //LBU
         {
-            
+
         }
         else if (func3 == "101") //LHU
         {
@@ -599,7 +599,7 @@ int main()
     string instruction_arr[100];
 
     // Test values
-    data_arr[2] = 4;
+    data_arr[2] = 2893368660;
     data_arr[3] = 1;
     data_arr[8] = 2;
     data_arr[9] = 3;
