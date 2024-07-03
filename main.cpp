@@ -231,7 +231,20 @@ void Itype(string opcode, int rd_decimal, string func3, int rs1_decimal, int imm
         }
         else if (func3 == "001") //LH
         {
+            string str = decimalToBinarySigned(data_arr[rs1_decimal + immediate_decimal]);  //LH
+            for(int i=0; i<16; i++)
+            {
+                if(str[16] == '1'){
+                    str[i] = '1';
+                }
+                else{
+                    str[i] = '0';
+                }
+            }
+            data_arr[rd_decimal] = binaryToSignedDecimal(str);
 
+            cout << "lh x" << rd_decimal << ", " << immediate_decimal << "(x" << rs1_decimal << ")" << endl;
+            cout << "The result of the load: " << data_arr[rd_decimal] << endl;
         }
         else if (func3 == "010") //LW
         {
@@ -241,7 +254,7 @@ void Itype(string opcode, int rd_decimal, string func3, int rs1_decimal, int imm
         }
         else if (func3 == "100") //LBU
         {
-
+            
         }
         else if (func3 == "101") //LHU
         {
