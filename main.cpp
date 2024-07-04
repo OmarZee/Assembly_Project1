@@ -4,6 +4,8 @@
 
 using namespace std;
 
+string instruction_arr[16000];
+string data_arr[16000];
 int register_arr[32];
 int PC=0;       // Program Counter
 
@@ -169,6 +171,7 @@ void Rtype(string opcode, int rd_decimal, string func3, int rs1_decimal, int rs2
     {
         register_arr[rd_decimal] = register_arr[rs1_decimal] & register_arr[rs2_decimal];  //AND
     }
+    PC++;
 }
 
 // ITYPE
@@ -181,35 +184,41 @@ void Itype(string opcode, int rd_decimal, string func3, int rs1_decimal, int imm
             register_arr[rd_decimal] = register_arr[rs1_decimal] + immediate_decimal;  //ADDI
             cout << "addi x" << rd_decimal << ", x" << rs1_decimal << ", " << immediate_decimal << endl;
             cout << "The result of the addition: " << register_arr[rd_decimal] << endl;
+            PC++;
         }
         else if (func3 == "010") //func3 = 2
         {
             register_arr[rd_decimal] = register_arr[rs1_decimal] < immediate_decimal;  //SLTI
             cout << "slti x" << rd_decimal << ", x" << rs1_decimal << ", " << immediate_decimal << endl;
             cout << "The result of the comparison: " << register_arr[rd_decimal] << endl;
+            PC++;
         }
         else if (func3 == "011") //func3 = 3
         {
             register_arr[rd_decimal] = register_arr[rs1_decimal] < immediate_decimal;  //SLTIU
             cout << "sltiu x" << rd_decimal << ", x" << rs1_decimal << ", " << immediate_decimal << endl;
             cout << "The result of the comparison: " << register_arr[rd_decimal] << endl;
-            // Need to add 0 extension
+            PC++;
         }
         else if (func3 == "100") //func3 = 4
         {
             register_arr[rd_decimal] = register_arr[rs1_decimal] ^ immediate_decimal;  //XORI
+            PC++;
         }
         else if (func3 == "110") //func3 = 6
         {
             register_arr[rd_decimal] = register_arr[rs1_decimal] | immediate_decimal;  //ORI
+            PC++;
         }
         else if (func3 == "111") //func3 = 7
         {
             register_arr[rd_decimal] = register_arr[rs1_decimal] & immediate_decimal;  //ANDI
+            PC++;
         }
         else if (func3 == "001") //func3 = 1
         {
             register_arr[rd_decimal] = register_arr[rs1_decimal] << immediate_decimal;  //SLLI
+            PC++;
         }
         else if (func3 == "101") //func3 = 5
         {
@@ -222,6 +231,7 @@ void Itype(string opcode, int rd_decimal, string func3, int rs1_decimal, int imm
                 register_arr[rd_decimal] = register_arr[rs1_decimal] >> immediate_decimal;
                 // Need to add sign extension
             }
+            PC++;
         } 
     }
     else if (opcode == "0000011")
@@ -290,26 +300,29 @@ void Itype(string opcode, int rd_decimal, string func3, int rs1_decimal, int imm
             cout << "lhu x" << rd_decimal << ", " << immediate_decimal << "(x" << rs1_decimal << ")" << endl;
             cout << "The result of the load: " << register_arr[rd_decimal] << endl;
         }
+        PC++;
     }
     else if (opcode == "1100111")
     {
         if (func3 == "000") // jalr
         {
             rd_decimal = PC + 1;
-            PC = rs1_decimal + immediate_decimal;
+            PC = immediate_decimal;
         }
+        cout << "jalr x" << rd_decimal << ", x" << rs1_decimal << ", " << immediate_decimal << endl;
+        cout << "The result of the jump: " << instruction_arr[PC] << endl;
     }
-    else if (opcode == "1110011")
-    {
-        if (immediate_decimal == 0) // ecall
-        {
+    // else if (opcode == "1110011")
+    // {
+    //     if (immediate_decimal == 0) // ecall
+    //     {
 
-        }
-        else if (immediate_decimal == 1) //ebreak
-        {
+    //     }
+    //     else if (immediate_decimal == 1) //ebreak
+    //     {
 
-        }
-    }   
+    //     }
+    // }   
 }
 
 // STYPE
@@ -359,8 +372,10 @@ void Stype(string opcode, string func3, int rs1_decimal, int rs2_decimal, int im
         cout << "sw x" << rs2_decimal << ", " << immediate_decimal << "(x" << rs1_decimal << ")" << endl;
         cout << "The result of the store: " << register_arr[rs1_decimal + immediate_decimal] << endl;
     }
+    PC++;
 }
 
+// BTYPE
 void Btype(string opcode, string func3, int rs1_decimal, int rs2_decimal, int immediate_decimal)
 {
     // BEQ
@@ -371,10 +386,11 @@ void Btype(string opcode, string func3, int rs1_decimal, int rs2_decimal, int im
             //cout << "PC = " << PC << endl;
             PC = immediate_decimal; 
         }
-        else {PC += 1;} // not (PC = PC + 4) because we store in array so index increment by 1
-
-        cout << "beq x" << rs1_decimal << ", x" << rs2_decimal << ", " << PC << endl;
-        cout << "The result of the branching: " << register_arr[PC] << endl;
+        else{
+            PC++;
+        }
+        cout << "beq x" << rs1_decimal << ", x" << rs2_decimal << ", " << immediate_decimal << endl;
+        cout << "The result of the branching: " << instruction_arr[PC] << endl;
     }
     // BNE
     else if (func3 == "001") // func3 = 1
@@ -383,10 +399,11 @@ void Btype(string opcode, string func3, int rs1_decimal, int rs2_decimal, int im
         {
             PC = immediate_decimal;
         }
-        else {PC += 1;}
-
-        cout << "bne x" << rs1_decimal << ", x" << rs2_decimal << ", " << PC << endl;
-        cout << "The result of the branching: " << register_arr[PC] << endl;
+        else{
+            PC++;
+        }
+        cout << "bne x" << rs1_decimal << ", x" << rs2_decimal << ", " << immediate_decimal << endl;
+        cout << "The result of the branching: " << instruction_arr[PC] << endl;
     }
     // BLT
     else if (func3 == "100") // func3 = 4
@@ -395,10 +412,12 @@ void Btype(string opcode, string func3, int rs1_decimal, int rs2_decimal, int im
         {
             PC = immediate_decimal;
         }
-        else {PC += 1;}
+        else{
+            PC++;
+        }
 
-        cout << "blt x" << rs1_decimal << ", x" << rs2_decimal << ", " << PC << endl;
-        cout << "The result of the branching: " << register_arr[PC] << endl;
+        cout << "blt x" << rs1_decimal << ", x" << rs2_decimal << ", " << immediate_decimal << endl;
+        cout << "The result of the branching: " << instruction_arr[PC] << endl;
     }
     // BGE
     else if (func3 == "101") // func3 = 5
@@ -407,10 +426,11 @@ void Btype(string opcode, string func3, int rs1_decimal, int rs2_decimal, int im
         {
             PC = immediate_decimal;
         }
-        else {PC += 1;}
-
-        cout << "bge x" << rs1_decimal << ", x" << rs2_decimal << ", " << PC << endl;
-        cout << "The result of the branching: " << register_arr[PC] << endl;
+        else{
+            PC++;
+        }
+        cout << "bge x" << rs1_decimal << ", x" << rs2_decimal << ", " << immediate_decimal << endl;
+        cout << "The result of the branching: " << instruction_arr[PC] << endl;
     }
     // BLTU
     else if (func3 == "110") // func3 = 6
@@ -419,16 +439,16 @@ void Btype(string opcode, string func3, int rs1_decimal, int rs2_decimal, int im
         int rs1_value= binaryToUnsignedDecimal(decimalToBinaryUnsigned(register_arr[rs1_decimal]));
         int rs2_value = binaryToUnsignedDecimal(decimalToBinaryUnsigned(register_arr[rs2_decimal]));
 
-        cout << "PC = " << PC << endl;
         if (rs1_value < rs2_value)
         {
             cout << "PC = " << PC << endl;
             PC = immediate_decimal;
         }
-        else {PC += 1;}
-
-        cout << "bltu x" << rs1_decimal << ", x" << rs2_decimal << ", " << PC << endl;
-        cout << "The result of the branching: " << register_arr[PC] << endl;
+        else{
+            PC++;
+        }
+        cout << "bltu x" << rs1_decimal << ", x" << rs2_decimal << ", " << immediate_decimal << endl;
+        cout << "The result of the branching: " << instruction_arr[PC] << endl;
     }
     // BGEU
     else if (func3 == "111") // func3 = 7
@@ -442,12 +462,50 @@ void Btype(string opcode, string func3, int rs1_decimal, int rs2_decimal, int im
             cout << "PC = " << PC << endl;
             PC = immediate_decimal;
         }
-        else {PC += 1;}
-
-        cout << "bgeu x" << rs1_decimal << ", x" << rs2_decimal << ", " << PC << endl;
-        cout << "The result of the branching: " << register_arr[PC] << endl;
+        else{
+            PC++;
+        }
+        cout << "bgeu x" << rs1_decimal << ", x" << rs2_decimal << ", " << immediate_decimal << endl;
+        cout << "The result of the branching: " << instruction_arr[PC] << endl;
     }
+}
 
+// UTYPE
+void Utype(string opcode, int rd_decimal, string immediate)
+{
+    if (opcode == "0110111") //LUI
+    {
+        for(int i=20; i<32; i++){
+            immediate[i] = 0;
+        }
+        int immediate_decimal = binaryToUnsignedDecimal(immediate);
+        register_arr[rd_decimal] = immediate_decimal;
+        cout << "lui x" << rd_decimal << ", " << immediate_decimal << endl;
+        cout << "The result of the load: " << register_arr[rd_decimal] << endl;
+        PC++;
+    }
+    else if (opcode == "0010111") //AUIPC
+    {
+        for(int i=20; i<32; i++){
+            immediate[i] = 0;
+        }
+        int immediate_decimal = binaryToUnsignedDecimal(immediate);
+        register_arr[rd_decimal] = PC + immediate_decimal;
+        cout << "auipc x" << rd_decimal << ", " << immediate_decimal << endl;
+        cout << "The result of the addition: " << register_arr[rd_decimal] << endl;
+    }
+}
+
+// JTYPE
+void Jtype(string opcode, int rd_decimal, int immediate_decimal)
+{
+    if (opcode == "1101111") //JAL
+    {
+        register_arr[rd_decimal] = PC + 1;
+        PC = immediate_decimal;
+        cout << "jal x" << rd_decimal << ", " << immediate_decimal << endl;
+        cout << "The result of the jump: " << instruction_arr[PC] << endl;
+    }
 }
 
 void instruction(string str, string opcode, char type)
@@ -708,11 +766,11 @@ void instruction(string str, string opcode, char type)
         }
         cout << "imm[31:12] = " << immediate << endl;
 
-        //Utype(opcode, rd, immediate);
+        Utype(opcode, rd_decimal, immediate);
     }
 
-
-    if (type == 'J') //J-type instruction format
+//J-type instruction format
+    if (type == 'J') 
     {
         int j = 0;
         for (int i = 20 ; i < 25; i++) //getting rd value
@@ -721,17 +779,41 @@ void instruction(string str, string opcode, char type)
             j++;
         }
         cout << "rd = " << rd << endl;
+        rd_decimal = binaryToDecimal(rd);
 
         //getting imm2[12|10:5]
         string immediate = "00000000000000000000";
-        for (int i = 0 ; i < 20; i++) //getting imm2 value
+        string imm3 = "00000000";
+        j = 0;
+        for (int i = 12 ; i < 20; i++) //getting imm3 value
         {
-            immediate[j] = str[i];
+            imm3[j] = str[i];
             j++;
         }
+
+        string imm2 = "0";
+        imm2[0] = str[11];
+        
+        string imm1 = "0000000000";
+        j = 0;
+        for (int i = 1 ; i < 11; i++) //getting imm2 value
+        {
+            imm1[j] = str[i];
+            j++;
+        }
+
+        string imm4 = "0";
+        imm4[0] = str[0];
+
+        immediate = imm4 + imm3 + imm2 + imm1 + '0' ;
+        immediate_decimal = binaryToSignedDecimal(immediate);
+        cout << "imm4" << imm4 << endl;
+        cout << "imm3" << imm3 << endl;
+        cout << "imm2" << imm2 << endl;
+        cout << "imm1" << imm1 << endl;
         cout << "imm[20|10:1|11|19:12] = " << immediate << endl;
 
-        //Jtype(opcode, rd, immediate);
+        Jtype(opcode, rd_decimal, immediate_decimal);
     }
 
 }
@@ -801,27 +883,32 @@ int main()
 {
     string str;
     int line_count = 0;
-    ifstream file("machinecode.txt");
-    string instruction_arr[100];
+    int data_counter = 0;
+    ifstream file1("C:/Users/omars/OneDrive/Desktop/Uni/AUC/Summer 24/Assembly/Project 1/Assembly_Project1/machinecode.txt");
+    ifstream file2("C:/Users/omars/OneDrive/Desktop/Uni/AUC/Summer 24/Assembly/Project 1/Assembly_Project1/data.txt");
 
     // Test values
-    register_arr[1] = 4;
-    register_arr[2] = 6;
-    register_arr[3] = 1;
-    register_arr[8] = 2;
+    register_arr[1] = 2;
+    register_arr[4] = 4;
+    register_arr[3] = 2;
+    register_arr[2] = 3;
     register_arr[9] = 3;
     register_arr[0] = 0;
 
     cout << endl;
 
-    if (!file.is_open()) {
+    if (!file1.is_open()) {
+        cout << "Failed to open the file." << endl;
+        return 1;
+    }
+    if (!file2.is_open()) {
         cout << "Failed to open the file." << endl;
         return 1;
     }
 
     string line;
     // Read the file line by line
-    while (getline(file, line)) {
+    while (getline(file1, line)) {
         //cout << endl;
         instruction_arr[PC] = line;
         cout << line << endl;
@@ -829,28 +916,22 @@ int main()
         line_count++; // increment the line count
     }
 
-    cout << "-----------------------------------------------------------------" << endl;
-
-    for (int i=0; i<line_count; i++)
-    {
-        cout << instruction_arr[i] << endl;
-        str=instruction_arr[i];
-        decode(str);
-        
+    while (getline(file2, line)) {
+        //cout << endl;
+        data_arr[data_counter] = line;
+        cout << line << endl;
+        data_counter++; // increment the data count
     }
 
-    //register_arr[18]=0;
+    cout << "-----------------------------------------------------------------" << endl;
+    PC = 0;
+    while(PC < line_count){
+        cout << instruction_arr[PC] << endl;
+        str=instruction_arr[PC];
+        decode(str);
+    }
 
-    
     cout << "*****************************************************************" <<endl;
-    // for(int i=0; i<str.size(); i++)
-    // {
-    //     cout << str[i] << endl;
-    // }
-
-
-    // Close the file
-    file.close();
 
     return 0;
 }
