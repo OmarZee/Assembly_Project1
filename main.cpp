@@ -924,7 +924,7 @@ int main(int argc, char *argv[])
     ofstream outFile;
 
 
-    if (argc < 3) emitError("use: rvsim <input_file_name> <output_file_name>\n");
+    if (argc < 4) emitError("use: rvsim <input_instruction_file_name> <machinecode.txt> <input_data_file_name>\n");
 
     inFile.open(argv[1], ios::in | ios::binary | ios::ate);
     if (inFile.is_open()) {
@@ -950,7 +950,31 @@ int main(int argc, char *argv[])
         emitError("Cannot access input file\n");
     }
 
-    ifstream file1("C:/Users/omars/OneDrive/Desktop/Uni/AUC/Summer 24/Assembly/Project 1/Assembly_Project1/machinecode23.txt");
+    ifstream additionalFile(argv[3], ios::in | ios::binary | ios::ate);
+    ofstream dataFile("data.txt", ios::out | ios::trunc);
+if (!additionalFile.is_open()) emitError("Cannot access additional binary file\n");
+    if (!dataFile.is_open()) emitError("Cannot open data.txt for writing\n");
+
+    int addFsize = additionalFile.tellg();
+    additionalFile.seekg(0, additionalFile.beg);
+    unsigned char *additionalMemory = new unsigned char[addFsize];
+
+    if (!additionalFile.read((char *)additionalMemory, addFsize)) emitError("Cannot read from additional binary file\n");
+
+    // Write binary content to data.txt
+    for (int i = 0; i < addFsize; i += 4) {
+        unsigned int instWord = (unsigned char)additionalMemory[i] |
+                                (((unsigned char)additionalMemory[i + 1]) << 8) |
+                                (((unsigned char)additionalMemory[i + 2]) << 16) |
+                                (((unsigned char)additionalMemory[i + 3]) << 24);
+        dataFile << bitset<32>(instWord) << endl; // Convert to binary and write to data.txt
+    }
+
+    dataFile.close();
+    additionalFile.close();
+    delete[] additionalMemory;
+
+    ifstream file1("C:/Users/omars/OneDrive/Desktop/Uni/AUC/Summer 24/Assembly/Project 1/Assembly_Project1/machinecode.txt");
     ifstream file2("C:/Users/omars/OneDrive/Desktop/Uni/AUC/Summer 24/Assembly/Project 1/Assembly_Project1/data.txt");
 
     // Test values
