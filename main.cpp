@@ -889,7 +889,7 @@ void decode(string str)
     }
     else 
     {
-        cout << "Error!" << endl;
+        cout << "Error! Unknown instruction!" << endl;
     }
 
 
@@ -950,8 +950,8 @@ int main(int argc, char *argv[])
         emitError("Cannot access input file\n");
     }
 
-    ifstream file1("C:/Users/omars/OneDrive/Desktop/Uni/AUC/Summer 24/Assembly/Project 1/Assembly_Project1/machinecode23.txt");
-    ifstream file2("C:/Users/omars/OneDrive/Desktop/Uni/AUC/Summer 24/Assembly/Project 1/Assembly_Project1/data.txt");
+    ifstream file1("C:/Users/dalia/OneDrive/Desktop/Summer 2024/Assembly/Project/Assembly_Project1.1/Assembly_Project1/t2.bin");
+    ifstream file2("C:/Users/dalia/OneDrive/Desktop/Summer 2024/Assembly/Project/Assembly_Project1.1/Assembly_Project1/t2Out.txt");
 
     // Test values
     register_arr[1] = 2;
