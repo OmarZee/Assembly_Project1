@@ -8,6 +8,7 @@ using namespace std;
 
 string instruction_arr[16000];
 string data_arr[16000];
+string user_string;
 int register_arr[32];
 int PC=0;       // Program Counter
 
@@ -323,17 +324,27 @@ void Itype(string opcode, int rd_decimal, string func3, int rs1_decimal, int imm
         cout << "jalr x" << rd_decimal << ", x" << rs1_decimal << ", " << immediate_decimal << endl;
         cout << "The result of the jump: " << instruction_arr[PC] << endl;
     }
-    // else if (opcode == "1110011")
-    // {
-    //     if (immediate_decimal == 0) // ecall
-    //     {
+    else if (opcode == "1110011")
+    {
+        if (immediate_decimal == 0) // ecall
+        {
+            if(register_arr[17] == 4){
+                cout << "The result of the print: " << to_string(register_arr[10]) << endl;
+            }
+            else if(register_arr[17] == 1){
+                cout << "The result of the print: " << register_arr[10] << endl;
+            }
+            else if(register_arr[17] == 10){
+                // terminate the program
+                exit(0);
+            }
+        }
+        // else if (immediate_decimal == 1) //ebreak
+        // {
 
-    //     }
-    //     else if (immediate_decimal == 1) //ebreak
-    //     {
-
-    //     }
-    // }   
+        // }
+        PC++;
+    }   
 }
 
 // STYPE
