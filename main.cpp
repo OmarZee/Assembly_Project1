@@ -219,6 +219,10 @@ void Itype(string opcode, int rd_decimal, string func3, int rs1_decimal, int imm
         }
         else if (func3 == "001") //func3 = 1
         {
+            for(int i=0;i<7;i++){
+                    imm[i] = '0';
+                }
+            immediate_decimal = binaryToSignedDecimal(imm);
             register_arr[rd_decimal] = register_arr[rs1_decimal] << immediate_decimal;  //SLLI
             PC++;
         }
