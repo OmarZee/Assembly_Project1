@@ -898,9 +898,6 @@ void decode(string str)
 
 
 
-
-
-
 // Function to display an error message and terminate the program
 void emitError(const string &message) {
     cerr << message << endl;
@@ -914,8 +911,7 @@ void instDecExec(unsigned int instWord, ofstream &outfile) {
 }
 
 unsigned char memory[65536]; // Define memory size
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     string str;
     int line_count = 0;
     int data_counter = 0;
@@ -923,8 +919,7 @@ int main(int argc, char *argv[])
     ifstream inFile;
     ofstream outFile;
 
-
-    if (argc < 3) emitError("use: rvsim <input_file_name> <output_file_name>\n");
+    if (argc < 2) emitError("use: rvsim <input_instruction_file_name> [<input_data_file_name>]\n");
 
     inFile.open(argv[1], ios::in | ios::binary | ios::ate);
     if (inFile.is_open()) {
@@ -932,8 +927,8 @@ int main(int argc, char *argv[])
         inFile.seekg(0, inFile.beg);
         if (!inFile.read((char *)memory, fsize)) emitError("Cannot read from input file\n");
 
-        outFile.open(argv[2], ios::out | ios::trunc);
-        if (!outFile.is_open()) emitError("Cannot open output file\n");
+        outFile.open("machinecode.txt", ios::out | ios::trunc);
+        if (!outFile.is_open()) emitError("Cannot open machinecode.txt for writing\n");
 
         while (PC < fsize) {
             instWord = (unsigned char)memory[PC] |
@@ -950,8 +945,35 @@ int main(int argc, char *argv[])
         emitError("Cannot access input file\n");
     }
 
-    ifstream file1("C:/Users/dalia/OneDrive/Desktop/Summer 2024/Assembly/Project/Assembly_Project1.1/Assembly_Project1/t2.bin");
-    ifstream file2("C:/Users/dalia/OneDrive/Desktop/Summer 2024/Assembly/Project/Assembly_Project1.1/Assembly_Project1/t2Out.txt");
+    if (argc == 3) {
+        ifstream additionalFile(argv[2], ios::in | ios::binary | ios::ate);
+        if (!additionalFile.is_open()) emitError("Cannot access additional binary file\n");
+
+        int addFsize = additionalFile.tellg();
+        additionalFile.seekg(0, additionalFile.beg);
+        unsigned char *additionalMemory = new unsigned char[addFsize];
+
+        if (!additionalFile.read((char *)additionalMemory, addFsize)) emitError("Cannot read from additional binary file\n");
+
+        ofstream dataFile("data.txt", ios::out | ios::trunc);
+        if (!dataFile.is_open()) emitError("Cannot open data.txt for writing\n");
+
+        // Write binary content to data.txt
+        for (int i = 0; i < addFsize; i += 4) {
+            unsigned int instWord = (unsigned char)additionalMemory[i] |
+                                    (((unsigned char)additionalMemory[i + 1]) << 8) |
+                                    (((unsigned char)additionalMemory[i + 2]) << 16) |
+                                    (((unsigned char)additionalMemory[i + 3]) << 24);
+            dataFile << bitset<32>(instWord) << endl; // Convert to binary and write to data.txt
+        }
+
+        dataFile.close();
+        additionalFile.close();
+        delete[] additionalMemory;
+    }
+
+    ifstream file1("machinecode.txt");
+    ifstream file2("data.txt");
 
     // Test values
     register_arr[1] = 2;
@@ -976,7 +998,6 @@ int main(int argc, char *argv[])
     string line;
     // Read the file line by line
     while (getline(file1, line)) {
-        //cout << endl;
         instruction_arr[PC] = line;
         cout << line << endl;
         PC++;
@@ -984,7 +1005,6 @@ int main(int argc, char *argv[])
     }
 
     while (getline(file2, line)) {
-        //cout << endl;
         data_arr[data_counter] = line;
         cout << line << endl;
         data_counter++; // increment the data count
@@ -992,14 +1012,14 @@ int main(int argc, char *argv[])
 
     cout << "-----------------------------------------------------------------" << endl;
     PC = 0;
-    while(PC < line_count){
+    while (PC < line_count) {
         cout << "PROGRAM COUNTER = " << PC << endl;
         cout << instruction_arr[PC] << endl;
-        str=instruction_arr[PC];
+        str = instruction_arr[PC];
         decode(str);
     }
 
-    cout << "*****************************************************************" <<endl;
+    cout << "*****************************************************************" << endl;
 
     return 0;
 }
