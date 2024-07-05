@@ -184,9 +184,14 @@ void Itype(string opcode, int rd_decimal, string func3, int rs1_decimal, int imm
     {
         if (func3 == "000") //func3 = 0
         {
-            register_arr[rd_decimal] = register_arr[rs1_decimal] + immediate_decimal;  //ADDI
+            if(rd_decimal == 2){
+                register_arr[rd_decimal] = register_arr[rs1_decimal] + immediate_decimal/8; // Dividing by 8 because x2 has the stack pointer
+            }
+            else{
+                register_arr[rd_decimal] = register_arr[rs1_decimal] + immediate_decimal;  //ADDI
             cout << "addi x" << rd_decimal << ", x" << rs1_decimal << ", " << immediate_decimal << endl;
             cout << "The result of the addition: " << register_arr[rd_decimal] << endl;
+            }
             PC++;
         }
         else if (func3 == "010") //func3 = 2
@@ -220,6 +225,10 @@ void Itype(string opcode, int rd_decimal, string func3, int rs1_decimal, int imm
         }
         else if (func3 == "001") //func3 = 1
         {
+            for(int i=0;i<7;i++){
+                    imm[i] = '0';
+                }
+            immediate_decimal = binaryToSignedDecimal(imm);
             register_arr[rd_decimal] = register_arr[rs1_decimal] << immediate_decimal;  //SLLI
             PC++;
         }
@@ -905,11 +914,6 @@ void decode(string str)
 
 
 }
-
-
-
-
-
 
 
 // Function to display an error message and terminate the program
