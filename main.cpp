@@ -1,6 +1,8 @@
-#include<iostream>
-#include<fstream>
-#include<string>
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <bitset>
+#include <string>
 
 using namespace std;
 
@@ -175,7 +177,7 @@ void Rtype(string opcode, int rd_decimal, string func3, int rs1_decimal, int rs2
 }
 
 // ITYPE
-void Itype(string opcode, int rd_decimal, string func3, int rs1_decimal, int immediate_decimal)
+void Itype(string opcode, int rd_decimal, string func3, int rs1_decimal, int immediate_decimal, string imm)
 {
     if (opcode == "0010011")
     {
@@ -224,12 +226,21 @@ void Itype(string opcode, int rd_decimal, string func3, int rs1_decimal, int imm
         {
             if (opcode == "0010011") //SRLI
             {
+                for(int i=0;i<7;i++){
+                    imm[i] = '0';
+                }
+                immediate_decimal = binaryToSignedDecimal(imm);
                 register_arr[rd_decimal] = register_arr[rs1_decimal] >> immediate_decimal;
+                cout << "Actual immediate = " << immediate_decimal << endl;
             }
             else //SRAI
             {
+                for(int i=0;i<7;i++){
+                    imm[i] = '0';
+                }
+                immediate_decimal = binaryToSignedDecimal(imm);
                 register_arr[rd_decimal] = register_arr[rs1_decimal] >> immediate_decimal;
-                // Need to add sign extension
+                cout << "Actual immediate = " << immediate_decimal << endl;
             }
             PC++;
         } 
@@ -475,10 +486,11 @@ void Utype(string opcode, int rd_decimal, string immediate)
 {
     if (opcode == "0110111") //LUI
     {
-        for(int i=20; i<32; i++){
-            immediate[i] = 0;
-        }
+        // for(int i=20; i<32; i++){
+        //     immediate[i] = 0;
+        // }
         int immediate_decimal = binaryToUnsignedDecimal(immediate);
+        immediate_decimal = immediate_decimal << 12;
         register_arr[rd_decimal] = immediate_decimal;
         cout << "lui x" << rd_decimal << ", " << immediate_decimal << endl;
         cout << "The result of the load: " << register_arr[rd_decimal] << endl;
@@ -490,9 +502,11 @@ void Utype(string opcode, int rd_decimal, string immediate)
             immediate[i] = 0;
         }
         int immediate_decimal = binaryToUnsignedDecimal(immediate);
+        immediate_decimal = immediate_decimal << 12;
         register_arr[rd_decimal] = PC + immediate_decimal;
         cout << "auipc x" << rd_decimal << ", " << immediate_decimal << endl;
         cout << "The result of the addition: " << register_arr[rd_decimal] << endl;
+        PC++;
     }
 }
 
@@ -583,10 +597,11 @@ void instruction(string str, string opcode, char type)
         for (int i = 20 ; i < 25; i++) //getting rd value
         {
             rd[j] = str[i];
-            rd_decimal = binaryToDecimal(rd);
             j++;
         }
+        rd_decimal = binaryToDecimal(rd);
         cout << "rd = " << rd << endl;
+        cout << "rd_decimal = " << rd_decimal << endl;
 
         //getting func3
         j = 0;
@@ -618,7 +633,7 @@ void instruction(string str, string opcode, char type)
         }
         cout << "Imm = " << immediate << endl;
 
-        Itype(opcode, rd_decimal, func3, rs1_decimal, immediate_decimal);
+        Itype(opcode, rd_decimal, func3, rs1_decimal, immediate_decimal, immediate);
     }
 
 //S-type instruction format
@@ -758,6 +773,7 @@ void instruction(string str, string opcode, char type)
         cout << "rd = " << rd << endl;
 
         //getting imm2[12|10:5]
+        j = 0;
         string immediate = "00000000000000000000";
         for (int i = 0 ; i < 20; i++) //getting imm2 value
         {
@@ -765,7 +781,7 @@ void instruction(string str, string opcode, char type)
             j++;
         }
         cout << "imm[31:12] = " << immediate << endl;
-
+        rd_decimal = binaryToDecimal(rd);
         Utype(opcode, rd_decimal, immediate);
     }
 
@@ -879,12 +895,62 @@ void decode(string str)
 
 }
 
-int main()
+
+
+
+
+
+
+// Function to display an error message and terminate the program
+void emitError(const string &message) {
+    cerr << message << endl;
+    exit(1);
+}
+
+void instDecExec(unsigned int instWord, ofstream &outfile) {
+    // Placeholder function to simulate instruction decode and execute.
+    // Replace this with your actual implementation.
+    outfile << bitset<32>(instWord) << endl; // Write the 32-bit instruction to file
+}
+
+unsigned char memory[65536]; // Define memory size
+int main(int argc, char *argv[])
 {
     string str;
     int line_count = 0;
     int data_counter = 0;
-    ifstream file1("C:/Users/omars/OneDrive/Desktop/Uni/AUC/Summer 24/Assembly/Project 1/Assembly_Project1/machinecode.txt");
+    unsigned int instWord = 0;
+    ifstream inFile;
+    ofstream outFile;
+
+
+    if (argc < 3) emitError("use: rvsim <input_file_name> <output_file_name>\n");
+
+    inFile.open(argv[1], ios::in | ios::binary | ios::ate);
+    if (inFile.is_open()) {
+        int fsize = inFile.tellg();
+        inFile.seekg(0, inFile.beg);
+        if (!inFile.read((char *)memory, fsize)) emitError("Cannot read from input file\n");
+
+        outFile.open(argv[2], ios::out | ios::trunc);
+        if (!outFile.is_open()) emitError("Cannot open output file\n");
+
+        while (PC < fsize) {
+            instWord = (unsigned char)memory[PC] |
+                       (((unsigned char)memory[PC + 1]) << 8) |
+                       (((unsigned char)memory[PC + 2]) << 16) |
+                       (((unsigned char)memory[PC + 3]) << 24);
+            PC += 4;
+            instDecExec(instWord, outFile);
+        }
+
+        outFile.close();
+        inFile.close();
+    } else {
+        emitError("Cannot access input file\n");
+    }
+
+    ifstream file1("C:/Users/omars/OneDrive/Desktop/Uni/AUC/Summer 24/Assembly/Project 1/Assembly_Project1/machinecode23.txt");
     ifstream file2("C:/Users/omars/OneDrive/Desktop/Uni/AUC/Summer 24/Assembly/Project 1/Assembly_Project1/data.txt");
 
     // Test values
@@ -906,6 +972,7 @@ int main()
         return 1;
     }
 
+    PC = 0;
     string line;
     // Read the file line by line
     while (getline(file1, line)) {
@@ -926,6 +993,7 @@ int main()
     cout << "-----------------------------------------------------------------" << endl;
     PC = 0;
     while(PC < line_count){
+        cout << "PROGRAM COUNTER = " << PC << endl;
         cout << instruction_arr[PC] << endl;
         str=instruction_arr[PC];
         decode(str);
