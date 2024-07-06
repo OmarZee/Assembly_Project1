@@ -329,6 +329,7 @@ void Itype(string opcode, int rd_decimal, string func3, int rs1_decimal, int imm
         else if (func3 == "100") //LBU
         {
             string str = decimalToBinaryUnsigned(register_arr[rs1_decimal + immediate_decimal]);  //LBU
+            str = "000000000" + str; 
             cout << "str = " << str << endl;
             for(int i=0; i<24; i++)
             {
@@ -345,6 +346,7 @@ void Itype(string opcode, int rd_decimal, string func3, int rs1_decimal, int imm
         else if (func3 == "101") //LHU
         {
             string str = decimalToBinaryUnsigned(register_arr[rs1_decimal + immediate_decimal]);  //LHU
+            str = "000000000" + str; 
             cout << "str = " << str << endl;
             for(int i=0; i<16; i++)
             {
@@ -364,16 +366,16 @@ void Itype(string opcode, int rd_decimal, string func3, int rs1_decimal, int imm
     {
         if (func3 == "000") // jalr
         {
-            rd_decimal = PC + 1;
+            register_arr[rd_decimal] = PC + 1;
             if (immediate_decimal % 2 == 0)
             {
                 cout << "even address" << endl;
-                PC = (immediate_decimal >> 1); 
+                PC = (immediate_decimal >> 2); 
             }
             else 
             {
                 cout << "odd address" << endl;
-                PC = (immediate_decimal >> 1) + 1;
+                PC = (immediate_decimal >> 2) + 1;
             }
         }
         cout << "jalr x" << rd_decimal << ", x" << rs1_decimal << ", " << PC << endl;
@@ -467,12 +469,12 @@ void Btype(string opcode, string func3, int rs1_decimal, int rs2_decimal, int im
             if (immediate_decimal % 2 == 0)
             {
                 cout << "even address" << endl;
-                PC = (immediate_decimal >> 1); 
+                PC = (immediate_decimal >> 2); 
             }
             else 
             {
                 cout << "odd address" << endl;
-                PC = (immediate_decimal >> 1) + 1;
+                PC = (immediate_decimal >> 2) + 1;
             }
         }
         else{
@@ -800,6 +802,7 @@ void instruction(string str, string opcode, char type)
         }
         cout << "Imm = " << immediate << endl;
         cout << "Imm = " << immediate_decimal << endl;
+        // immediate = "00000000000000000000" + immediate;
 
         Itype(opcode, rd_decimal, func3, rs1_decimal, immediate_decimal, immediate);
     }
