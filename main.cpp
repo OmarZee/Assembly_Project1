@@ -11,6 +11,7 @@ string data_arr[16000];
 string user_string;
 int register_arr[32];
 int PC=0;       // Program Counter
+string filename = "data.txt";
 
 int binaryToDecimal(string str)
 {
@@ -109,6 +110,48 @@ string decimalToBinarySigned(int num){
         }
     }
     return binary;
+}
+
+char binaryToAscii(const string &binaryString) {
+    bitset<8> byte(binaryString);
+    return static_cast<char>(byte.to_ulong());
+}
+
+// Decode binary file to a string
+string decodeBinaryFile(const string &filename) {
+    ifstream inFile(filename);
+    if (!inFile.is_open()) {
+        cerr << "Failed to open the file." << endl;
+        return "";
+    }
+
+    string line, decodedString;
+    while (getline(inFile, line)) {
+        if (line.length() != 32) {
+            cerr << "Invalid line length. Each line should be 32 bits." << endl;
+            continue;
+        }
+
+        // Split the 32-bit line into 4 groups of 8 bits
+        vector<string> binaryLetters;
+        for (int i = 0; i < 32; i += 8) {
+            binaryLetters.push_back(line.substr(i, 8));
+        }
+
+        // Decode each 8-bit binary string to ASCII and reverse the order
+        string decodedBlock;
+        for (int i = 3; i >= 0; --i) {
+            char decodedChar = binaryToAscii(binaryLetters[i]);
+            if (decodedChar == '\0') {
+                return decodedString; // Stop if null terminator is found
+            }
+            decodedBlock += decodedChar;
+        }
+
+        decodedString += decodedBlock;
+    }
+
+    return decodedString;
 }
 
 // RTYPE
@@ -405,11 +448,17 @@ void Itype(string opcode, int rd_decimal, string func3, int rs1_decimal, int imm
     {
         if (immediate_decimal == 0) // ecall
         {
+            register_arr[10] = register_arr[10] >> 12;
+            int address = register_arr[10]-16384;
+            string output = decodeBinaryFile(filename);
             if(register_arr[17] == 4){
-                cout << "The result of the print: " << to_string(register_arr[10]) << endl;
+                cout << "The result of the print: " << output << endl;
             }
             else if(register_arr[17] == 1){
-                cout << "The result of the print: " << register_arr[10] << endl;
+                // register_arr[10] = register_arr[10] >> 12;
+                // int address = register_arr[10]-16384;
+                int int_output = binaryToSignedDecimal(data_arr[address]);
+                cout << "The result of the print: " << int_output << endl;
             }
             else if(register_arr[17] == 10){
                 // terminate the program
@@ -1184,7 +1233,7 @@ unsigned char memory[65536]; // Define memory size
 int main(int argc, char *argv[]) {
     string str;
     int line_count = 0;
-    int data_counter = 16000;
+    int data_counter = 0;
     unsigned int instWord = 0;
     ifstream inFile;
     ofstream outFile;
@@ -1275,7 +1324,7 @@ int main(int argc, char *argv[]) {
     }
     data_counter = 0;
     while (getline(file2, line)) {
-        instruction_arr[data_counter] = line;
+        data_arr[data_counter] = line;
         cout << line << endl;
         data_counter++; // increment the data count
     }
