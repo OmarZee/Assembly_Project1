@@ -134,6 +134,8 @@ void Rtype(string opcode, int rd_decimal, string func3, int rs1_decimal, int rs2
     else if (func3 == "001") //func3 = 1
     {
         register_arr[rd_decimal] = register_arr[rs1_decimal] << register_arr[rs2_decimal];  //SLL
+        cout << "sll x" << rd_decimal << ", x" << rs1_decimal << ", x" << rs2_decimal << endl;
+        cout << "The result of the shift: " << register_arr[rd_decimal] << endl;
     }
     else if (func3 == "010") //func3 = 2
     {
@@ -153,26 +155,31 @@ void Rtype(string opcode, int rd_decimal, string func3, int rs1_decimal, int rs2
     else if (func3 == "100") //func3 = 4
     {
         register_arr[rd_decimal] = register_arr[rs1_decimal] ^ register_arr[rs2_decimal];  //XOR
+        cout << "xor x" << rd_decimal << ", x" << rs1_decimal << ", x" << rs2_decimal << endl;
     }
     else if (func3 == "101") //func3 = 5
     {
         if (func7 == "0000000") //SRL
         {
             register_arr[rd_decimal] = register_arr[rs1_decimal] >> register_arr[rs2_decimal];
+            cout << "srl x" << rd_decimal << ", x" << rs1_decimal << ", x" << rs2_decimal << endl;
         }
         else //SRA
         {
             register_arr[rd_decimal] = register_arr[rs1_decimal] >> register_arr[rs2_decimal];
+            cout << "sra x" << rd_decimal << ", x" << rs1_decimal << ", x" << rs2_decimal << endl;
             // Need to add sign extension
         }
     }
     else if (func3 == "110") //func3 = 6
     {
         register_arr[rd_decimal] = register_arr[rs1_decimal] | register_arr[rs2_decimal];  //OR
+        cout << "or x" << rd_decimal << ", x" << rs1_decimal << ", x" << rs2_decimal << endl;
     }
     else if (func3 == "111") //func3 = 7
     {
         register_arr[rd_decimal] = register_arr[rs1_decimal] & register_arr[rs2_decimal];  //AND
+        cout << "and x" << rd_decimal << ", x" << rs1_decimal << ", x" << rs2_decimal << endl;
     }
     PC++;
 }
@@ -185,13 +192,13 @@ void Itype(string opcode, int rd_decimal, string func3, int rs1_decimal, int imm
         if (func3 == "000") //func3 = 0
         {
             if(rd_decimal == 2){
-                register_arr[rd_decimal] = register_arr[rs1_decimal] + immediate_decimal/8; // Dividing by 8 because x2 has the stack pointer
+                register_arr[rd_decimal] = register_arr[rs1_decimal] + immediate_decimal/4;
             }
             else{
                 register_arr[rd_decimal] = register_arr[rs1_decimal] + immediate_decimal;  //ADDI
+            }
             cout << "addi x" << rd_decimal << ", x" << rs1_decimal << ", " << immediate_decimal << endl;
             cout << "The result of the addition: " << register_arr[rd_decimal] << endl;
-            }
             PC++;
         }
         else if (func3 == "010") //func3 = 2
@@ -506,9 +513,9 @@ void Utype(string opcode, int rd_decimal, string immediate)
 {
     if (opcode == "0110111") //LUI
     {
-        // for(int i=20; i<32; i++){
-        //     immediate[i] = 0;
-        // }
+        for(int i=20; i<32; i++){
+            immediate[i] = 0;
+        }
         int immediate_decimal = binaryToUnsignedDecimal(immediate);
         immediate_decimal = immediate_decimal << 12;
         register_arr[rd_decimal] = immediate_decimal;
@@ -909,11 +916,13 @@ void decode(string str)
     }
     else 
     {
-        cout << "Error!" << endl;
+        cout << "Error! Unknown instruction!" << endl;
     }
 
 
 }
+
+
 
 
 // Function to display an error message and terminate the program
@@ -929,8 +938,7 @@ void instDecExec(unsigned int instWord, ofstream &outfile) {
 }
 
 unsigned char memory[65536]; // Define memory size
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     string str;
     int line_count = 0;
     int data_counter = 0;
@@ -938,8 +946,7 @@ int main(int argc, char *argv[])
     ifstream inFile;
     ofstream outFile;
 
-
-    if (argc < 4) emitError("use: rvsim <input_instruction_file_name> <machinecode.txt> <input_data_file_name>\n");
+    if (argc < 2) emitError("use: rvsim <input_instruction_file_name> [<input_data_file_name>]\n");
 
     inFile.open(argv[1], ios::in | ios::binary | ios::ate);
     if (inFile.is_open()) {
@@ -947,8 +954,8 @@ int main(int argc, char *argv[])
         inFile.seekg(0, inFile.beg);
         if (!inFile.read((char *)memory, fsize)) emitError("Cannot read from input file\n");
 
-        outFile.open(argv[2], ios::out | ios::trunc);
-        if (!outFile.is_open()) emitError("Cannot open output file\n");
+        outFile.open("machinecode.txt", ios::out | ios::trunc);
+        if (!outFile.is_open()) emitError("Cannot open machinecode.txt for writing\n");
 
         while (PC < fsize) {
             instWord = (unsigned char)memory[PC] |
@@ -965,32 +972,35 @@ int main(int argc, char *argv[])
         emitError("Cannot access input file\n");
     }
 
-    ifstream additionalFile(argv[3], ios::in | ios::binary | ios::ate);
-    ofstream dataFile("data.txt", ios::out | ios::trunc);
-if (!additionalFile.is_open()) emitError("Cannot access additional binary file\n");
-    if (!dataFile.is_open()) emitError("Cannot open data.txt for writing\n");
+    if (argc == 3) {
+        ifstream additionalFile(argv[2], ios::in | ios::binary | ios::ate);
+        if (!additionalFile.is_open()) emitError("Cannot access additional binary file\n");
 
-    int addFsize = additionalFile.tellg();
-    additionalFile.seekg(0, additionalFile.beg);
-    unsigned char *additionalMemory = new unsigned char[addFsize];
+        int addFsize = additionalFile.tellg();
+        additionalFile.seekg(0, additionalFile.beg);
+        unsigned char *additionalMemory = new unsigned char[addFsize];
 
-    if (!additionalFile.read((char *)additionalMemory, addFsize)) emitError("Cannot read from additional binary file\n");
+        if (!additionalFile.read((char *)additionalMemory, addFsize)) emitError("Cannot read from additional binary file\n");
 
-    // Write binary content to data.txt
-    for (int i = 0; i < addFsize; i += 4) {
-        unsigned int instWord = (unsigned char)additionalMemory[i] |
-                                (((unsigned char)additionalMemory[i + 1]) << 8) |
-                                (((unsigned char)additionalMemory[i + 2]) << 16) |
-                                (((unsigned char)additionalMemory[i + 3]) << 24);
-        dataFile << bitset<32>(instWord) << endl; // Convert to binary and write to data.txt
+        ofstream dataFile("data.txt", ios::out | ios::trunc);
+        if (!dataFile.is_open()) emitError("Cannot open data.txt for writing\n");
+
+        // Write binary content to data.txt
+        for (int i = 0; i < addFsize; i += 4) {
+            unsigned int instWord = (unsigned char)additionalMemory[i] |
+                                    (((unsigned char)additionalMemory[i + 1]) << 8) |
+                                    (((unsigned char)additionalMemory[i + 2]) << 16) |
+                                    (((unsigned char)additionalMemory[i + 3]) << 24);
+            dataFile << bitset<32>(instWord) << endl; // Convert to binary and write to data.txt
+        }
+
+        dataFile.close();
+        additionalFile.close();
+        delete[] additionalMemory;
     }
 
-    dataFile.close();
-    additionalFile.close();
-    delete[] additionalMemory;
-
-    ifstream file1("C:/Users/omars/OneDrive/Desktop/Uni/AUC/Summer 24/Assembly/Project 1/Assembly_Project1/machinecode.txt");
-    ifstream file2("C:/Users/omars/OneDrive/Desktop/Uni/AUC/Summer 24/Assembly/Project 1/Assembly_Project1/data.txt");
+    ifstream file1("machinecode.txt");
+    ifstream file2("data.txt");
 
     // Test values
     register_arr[1] = 2;
@@ -1015,7 +1025,6 @@ if (!additionalFile.is_open()) emitError("Cannot access additional binary file\n
     string line;
     // Read the file line by line
     while (getline(file1, line)) {
-        //cout << endl;
         instruction_arr[PC] = line;
         cout << line << endl;
         PC++;
@@ -1023,7 +1032,6 @@ if (!additionalFile.is_open()) emitError("Cannot access additional binary file\n
     }
 
     while (getline(file2, line)) {
-        //cout << endl;
         data_arr[data_counter] = line;
         cout << line << endl;
         data_counter++; // increment the data count
@@ -1031,14 +1039,14 @@ if (!additionalFile.is_open()) emitError("Cannot access additional binary file\n
 
     cout << "-----------------------------------------------------------------" << endl;
     PC = 0;
-    while(PC < line_count){
+    while (PC < line_count) {
         cout << "PROGRAM COUNTER = " << PC << endl;
         cout << instruction_arr[PC] << endl;
-        str=instruction_arr[PC];
+        str = instruction_arr[PC];
         decode(str);
     }
 
-    cout << "*****************************************************************" <<endl;
+    cout << "*****************************************************************" << endl;
 
     return 0;
 }
