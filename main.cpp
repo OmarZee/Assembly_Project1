@@ -198,6 +198,7 @@ void Itype(string opcode, int rd_decimal, string func3, int rs1_decimal, int imm
     {
         if (func3 == "000") //func3 = 0
         {
+            register_arr[rd_decimal] = 0;
             if(rd_decimal == 2){
                 register_arr[rd_decimal] = register_arr[rs1_decimal] + immediate_decimal/4;
             }
@@ -502,12 +503,20 @@ void Btype(string opcode, string func3, int rs1_decimal, int rs2_decimal, int im
         {
             cout << "even address" << endl;
             immediate_decimal = (immediate_decimal >> 2);
+            if(immediate_decimal < 0){
+                immediate_decimal += 496;
+                cout << "immediate decimal = " << immediate_decimal << endl;
+            }
             PC += immediate_decimal;
         }
         else 
         {
             cout << "odd address" << endl;
             immediate_decimal = (immediate_decimal >> 2) + 1;
+            if(immediate_decimal < 0){
+                immediate_decimal += 496;
+                cout << "immediate decimal = " << immediate_decimal << endl;
+            }
             PC += immediate_decimal;
         }
         }
