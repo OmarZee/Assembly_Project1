@@ -537,7 +537,8 @@ void Btype(string opcode, string func3, int rs1_decimal, int rs2_decimal, int im
                 PC += immediate_decimal;
             }
         }
-        else{
+        else
+        {
             PC++;
         }
         cout << "bne x" << rs1_decimal << ", x" << rs2_decimal << ", " << PC << endl;
