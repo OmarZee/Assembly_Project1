@@ -467,15 +467,17 @@ void Btype(string opcode, string func3, int rs1_decimal, int rs2_decimal, int im
         if (register_arr[rs1_decimal] == register_arr[rs2_decimal])
         {
             if (immediate_decimal % 2 == 0)
-            {
-                cout << "even address" << endl;
-                PC = (immediate_decimal >> 1); 
-            }
-            else 
-            {
-                cout << "odd address" << endl;
-                PC = (immediate_decimal >> 1) + 1;
-            }
+        {
+            cout << "even address" << endl;
+            immediate_decimal = (immediate_decimal >> 2);
+            PC += immediate_decimal;
+        }
+        else 
+        {
+            cout << "odd address" << endl;
+            immediate_decimal = (immediate_decimal >> 2) + 1;
+            PC += immediate_decimal;
+        }
         }
         else{
             PC++;
@@ -488,17 +490,18 @@ void Btype(string opcode, string func3, int rs1_decimal, int rs2_decimal, int im
     {
         if (register_arr[rs1_decimal] != register_arr[rs2_decimal])
         {
-            //PC = (immediate_decimal >> 1);
             if (immediate_decimal % 2 == 0)
-            {
-                cout << "even address" << endl;
-                PC = (immediate_decimal >> 1); 
-            }
-            else 
-            {
-                cout << "odd address" << endl;
-                PC = (immediate_decimal >> 1) + 1;
-            }
+        {
+            cout << "even address" << endl;
+            immediate_decimal = (immediate_decimal >> 2);
+            PC += immediate_decimal;
+        }
+        else 
+        {
+            cout << "odd address" << endl;
+            immediate_decimal = (immediate_decimal >> 2) + 1;
+            PC += immediate_decimal;
+        }
         }
         else{
             PC++;
@@ -511,16 +514,18 @@ void Btype(string opcode, string func3, int rs1_decimal, int rs2_decimal, int im
     {
         if (register_arr[rs1_decimal] < register_arr[rs2_decimal])
         {
-            if (immediate_decimal % 2 == 0)
-            {
-                cout << "even address" << endl;
-                PC = (immediate_decimal >> 1); 
-            }
-            else 
-            {
-                cout << "odd address" << endl;
-                PC = (immediate_decimal >> 1) + 1;
-            }
+           if (immediate_decimal % 2 == 0)
+        {
+            cout << "even address" << endl;
+            immediate_decimal = (immediate_decimal >> 2);
+            PC += immediate_decimal;
+        }
+        else 
+        {
+            cout << "odd address" << endl;
+            immediate_decimal = (immediate_decimal >> 2) + 1;
+            PC += immediate_decimal;
+        }
         }
         else{
             PC++;
@@ -535,15 +540,17 @@ void Btype(string opcode, string func3, int rs1_decimal, int rs2_decimal, int im
         if (register_arr[rs1_decimal] >= register_arr[rs2_decimal])
         {
             if (immediate_decimal % 2 == 0)
-            {
-                cout << "even address" << endl;
-                PC = (immediate_decimal >> 1); 
-            }
-            else 
-            {
-                cout << "odd address" << endl;
-                PC = (immediate_decimal >> 1) + 1;
-            }
+        {
+            cout << "even address" << endl;
+            immediate_decimal = (immediate_decimal >> 2);
+            PC += immediate_decimal;
+        }
+        else 
+        {
+            cout << "odd address" << endl;
+            immediate_decimal = (immediate_decimal >> 2) + 1;
+            PC += immediate_decimal;
+        }
         }
         else{
             PC++;
@@ -562,15 +569,17 @@ void Btype(string opcode, string func3, int rs1_decimal, int rs2_decimal, int im
         {
             //cout << "PC = " << PC << endl;
             if (immediate_decimal % 2 == 0)
-            {
-                cout << "even address" << endl;
-                PC = (immediate_decimal >> 1); 
-            }
-            else 
-            {
-                cout << "odd address" << endl;
-                PC = (immediate_decimal >> 1) + 1;
-            }
+        {
+            cout << "even address" << endl;
+            immediate_decimal = (immediate_decimal >> 2);
+            PC += immediate_decimal;
+        }
+        else 
+        {
+            cout << "odd address" << endl;
+            immediate_decimal = (immediate_decimal >> 2) + 1;
+            PC += immediate_decimal;
+        }
         }
         else{
             PC++;
@@ -589,15 +598,17 @@ void Btype(string opcode, string func3, int rs1_decimal, int rs2_decimal, int im
         {
             //cout << "PC = " << PC << endl;
             if (immediate_decimal % 2 == 0)
-            {
-                cout << "even address" << endl;
-                PC = (immediate_decimal >> 1); 
-            }
-            else 
-            {
-                cout << "odd address" << endl;
-                PC = (immediate_decimal >> 1) + 1;
-            }
+        {
+            cout << "even address" << endl;
+            immediate_decimal = (immediate_decimal >> 2);
+            PC += immediate_decimal;
+        }
+        else 
+        {
+            cout << "odd address" << endl;
+            immediate_decimal = (immediate_decimal >> 2) + 1;
+            PC += immediate_decimal;
+        }
         }
         else{
             PC++;
