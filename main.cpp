@@ -137,6 +137,7 @@ void Rtype(string opcode, int rd_decimal, string func3, int rs1_decimal, int rs2
         register_arr[rd_decimal] = register_arr[rs1_decimal] << register_arr[rs2_decimal];  //SLL
         cout << "sll x" << rd_decimal << ", x" << rs1_decimal << ", x" << rs2_decimal << endl;
         cout << "The result of the instruction: " << register_arr[rd_decimal] << endl;
+        cout << "The result of the shift: " << register_arr[rd_decimal] << endl;
     }
     else if (func3 == "010") //func3 = 2
     {
@@ -197,7 +198,12 @@ void Itype(string opcode, int rd_decimal, string func3, int rs1_decimal, int imm
     {
         if (func3 == "000") //func3 = 0
         {
-            register_arr[rd_decimal] = register_arr[rs1_decimal] + immediate_decimal;  //ADDI
+            if(rd_decimal == 2){
+                register_arr[rd_decimal] = register_arr[rs1_decimal] + immediate_decimal/4;
+            }
+            else{
+                register_arr[rd_decimal] = register_arr[rs1_decimal] + immediate_decimal;  //ADDI
+            }
             cout << "addi x" << rd_decimal << ", x" << rs1_decimal << ", " << immediate_decimal << endl;
             cout << "The result of the addition: " << register_arr[rd_decimal] << endl;
             PC++;
@@ -604,9 +610,9 @@ void Utype(string opcode, int rd_decimal, string immediate)
 {
     if (opcode == "0110111") //LUI
     {
-        // for(int i=20; i<32; i++){
-        //     immediate[i] = 0;
-        // }
+        for(int i=20; i<32; i++){
+            immediate[i] = 0;
+        }
         int immediate_decimal = binaryToUnsignedDecimal(immediate);
         immediate_decimal = immediate_decimal << 12;
         register_arr[rd_decimal] = immediate_decimal;
