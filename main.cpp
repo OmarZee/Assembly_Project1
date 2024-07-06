@@ -1247,7 +1247,7 @@ int main(int argc, char *argv[]) {
 
     // Test values
     register_arr[1] = 2389577;
-    register_arr[4] = 4;
+    register_arr[4] = -4;
     register_arr[3] = 2;
     register_arr[2] = 3;
     register_arr[9] = 3;
