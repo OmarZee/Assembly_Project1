@@ -677,12 +677,12 @@ void Jtype(string opcode, int rd_decimal, int immediate_decimal)
         if (immediate_decimal % 2 == 0)
         {
             cout << "even address" << endl;
-            PC = (immediate_decimal >> 1); 
+            PC = (immediate_decimal >> 2); 
         }
         else 
         {
             cout << "odd address" << endl;
-            PC = (immediate_decimal >> 1) + 1;
+            PC = (immediate_decimal >> 2) + 1;
         }
         cout << "jal x" << rd_decimal << ", " << PC << endl;
         cout << "The result of the jump: " << instruction_arr[PC] << endl;
