@@ -514,12 +514,14 @@ void Btype(string opcode, string func3, int rs1_decimal, int rs2_decimal, int im
             if (immediate_decimal % 2 == 0)
             {
                 cout << "even address" << endl;
-                PC = (immediate_decimal >> 1); 
+                immediate_decimal = (immediate_decimal >> 1);
+                PC += immediate_decimal;
             }
             else 
             {
                 cout << "odd address" << endl;
-                PC = (immediate_decimal >> 1) + 1;
+                immediate_decimal = (immediate_decimal >> 1) + 1;
+                PC += immediate_decimal;
             }
         }
         else{
@@ -679,12 +681,14 @@ void Jtype(string opcode, int rd_decimal, int immediate_decimal)
         if (immediate_decimal % 2 == 0)
         {
             cout << "even address" << endl;
-            PC = (immediate_decimal >> 2); 
+            immediate_decimal = (immediate_decimal >> 2);
+            PC += immediate_decimal;
         }
         else 
         {
             cout << "odd address" << endl;
-            PC = (immediate_decimal >> 2) + 1;
+            immediate_decimal = (immediate_decimal >> 2) + 1;
+            PC += immediate_decimal;
         }
         cout << "jal x" << rd_decimal << ", " << PC << endl;
         cout << "The result of the jump: " << instruction_arr[PC] << endl;
@@ -1000,11 +1004,11 @@ void instruction(string str, string opcode, char type)
 
         immediate = imm4 + imm3 + imm2 + imm1 + '0' ;
         immediate_decimal = binaryToSignedDecimal(immediate);
-        cout << "imm4" << imm4 << endl;
-        cout << "imm3" << imm3 << endl;
-        cout << "imm2" << imm2 << endl;
-        cout << "imm1" << imm1 << endl;
-        cout << "imm[20|10:1|11|19:12] = " << immediate << endl;
+        cout << "imm4 = " << imm4 << endl;
+        cout << "imm3 = " << imm3 << endl;
+        cout << "imm2 = " << imm2 << endl;
+        cout << "imm1 = " << imm1 << endl;
+        cout << "imm[20|10:1|11|19:12] = " << immediate << " = " << immediate_decimal << endl;
 
         Jtype(opcode, rd_decimal, immediate_decimal);
     }
