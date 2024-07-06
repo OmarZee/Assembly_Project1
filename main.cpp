@@ -469,12 +469,12 @@ void Btype(string opcode, string func3, int rs1_decimal, int rs2_decimal, int im
             if (immediate_decimal % 2 == 0)
             {
                 cout << "even address" << endl;
-                PC = (immediate_decimal >> 2); 
+                PC = (immediate_decimal >> 1); 
             }
             else 
             {
                 cout << "odd address" << endl;
-                PC = (immediate_decimal >> 2) + 1;
+                PC = (immediate_decimal >> 1) + 1;
             }
         }
         else{
