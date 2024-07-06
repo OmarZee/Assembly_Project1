@@ -6,7 +6,7 @@
 
 using namespace std;
 
-string instruction_arr[16000];
+string instruction_arr[32000];
 string data_arr[16000];
 string user_string;
 int register_arr[32];
@@ -464,24 +464,32 @@ void Btype(string opcode, string func3, int rs1_decimal, int rs2_decimal, int im
     // BEQ
     if (func3 == "000") // func = 0
     {
+        cout << "immediate before shift" << immediate_decimal << endl;
         if (register_arr[rs1_decimal] == register_arr[rs2_decimal])
         {
             if (immediate_decimal % 2 == 0)
         {
             cout << "even address" << endl;
             immediate_decimal = (immediate_decimal >> 2);
+            if(immediate_decimal < 0){
+                immediate_decimal += 496;
+            }
             PC += immediate_decimal;
         }
         else 
         {
             cout << "odd address" << endl;
             immediate_decimal = (immediate_decimal >> 2) + 1;
+            if(immediate_decimal < 0){
+                immediate_decimal += 496;
+            }
             PC += immediate_decimal;
         }
         }
         else{
             PC++;
         }
+        cout << "immediate after shift" << immediate_decimal << endl;  
         cout << "beq x" << rs1_decimal << ", x" << rs2_decimal << ", " << PC << endl;
         cout << "The result of the branching: " << instruction_arr[PC] << endl;
     }
@@ -619,13 +627,38 @@ void Btype(string opcode, string func3, int rs1_decimal, int rs2_decimal, int im
 }
 
 // UTYPE
+// void Utype(string opcode, int rd_decimal, string immediate)
+// {
+//     for(int i=20; i<32; i++){
+//             immediate[i] = 0;
+//         }
+//     if (opcode == "0110111") //LUI
+//     {
+//         int immediate_decimal = binaryToUnsignedDecimal(immediate);
+//         immediate_decimal = immediate_decimal << 12;
+//         register_arr[rd_decimal] = immediate_decimal;
+//         cout << "lui x" << rd_decimal << ", " << immediate_decimal << endl;
+//         cout << "The result of the load: " << register_arr[rd_decimal] << endl;
+//         PC++;
+//     }
+//     else if (opcode == "0010111") //AUIPC
+//     {
+//         cout << "imm = " << immediate << endl;
+//         int immediate_decimal = binaryToUnsignedDecimal(immediate);
+//         immediate_decimal = immediate_decimal << 12;
+//         register_arr[rd_decimal] = PC + immediate_decimal;
+//         cout << "auipc x" << rd_decimal << ", " << immediate_decimal << endl;
+//         cout << "The result of the addition: " << register_arr[rd_decimal] << endl;
+//         PC++;
+//     }
+// }
 void Utype(string opcode, int rd_decimal, string immediate)
 {
-    if (opcode == "0110111") //LUI
-    {
-        for(int i=20; i<32; i++){
+    for(int i=20; i<32; i++){
             immediate[i] = 0;
         }
+    if (opcode == "0110111") //LUI
+    {
         int immediate_decimal = binaryToUnsignedDecimal(immediate);
         immediate_decimal = immediate_decimal << 12;
         register_arr[rd_decimal] = immediate_decimal;
@@ -635,10 +668,6 @@ void Utype(string opcode, int rd_decimal, string immediate)
     }
     else if (opcode == "0010111") //AUIPC
     {
-        // for(int i=20; i<32; i++){
-        //     immediate[i] = 0;
-        // }
-
         cout << "imm = " << immediate << endl;
         int immediate_decimal = binaryToUnsignedDecimal(immediate);
         immediate_decimal = immediate_decimal << 12;
@@ -940,7 +969,7 @@ void instruction(string str, string opcode, char type)
 
         immediate = imm4 + imm1 + imm3 + imm2 + '0';
         cout << "immediate = " << immediate << endl;
-        immediate_decimal = binaryToDecimal(immediate);
+        immediate_decimal = binaryToSignedDecimal(immediate);
 
 
         Btype(opcode, func3, rs1_decimal, rs2_decimal, immediate_decimal);
@@ -1104,7 +1133,7 @@ unsigned char memory[65536]; // Define memory size
 int main(int argc, char *argv[]) {
     string str;
     int line_count = 0;
-    int data_counter = 0;
+    int data_counter = 16000;
     unsigned int instWord = 0;
     ifstream inFile;
     ofstream outFile;
@@ -1193,9 +1222,9 @@ int main(int argc, char *argv[]) {
         PC++;
         line_count++; // increment the line count
     }
-
+    data_counter = 0;
     while (getline(file2, line)) {
-        data_arr[data_counter] = line;
+        instruction_arr[data_counter] = line;
         cout << line << endl;
         data_counter++; // increment the data count
     }
