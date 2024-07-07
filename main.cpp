@@ -466,7 +466,7 @@ void Itype(string opcode, int rd_decimal, string func3, int rs1_decimal, int imm
             }
             else if(register_arr[17] == 1){
                 register_arr[10] = register_arr[10] - 268435456;
-                address = register_arr[10]/4 - 2;
+                address = ecall_counter;
                 cout << "The address = " << address << endl;
                 int int_output = binaryToSignedDecimal(data_arr[address]);
                 cout << "The result of the print: " << int_output << endl;
@@ -478,8 +478,7 @@ void Itype(string opcode, int rd_decimal, string func3, int rs1_decimal, int imm
             }
         cout << "The address = " << address << endl;
         cout << "The data = " << data_arr[address] << endl;
-        //ecall_counter++;
-        int_ecall_counter++;
+        ecall_counter++;
         PC++;
     }   
 }
