@@ -1,7 +1,4 @@
-.text
-.globl main
 
-main:
 	li x1, 1
 	li x2, 4
 	li x3, 284876493
@@ -45,4 +42,4 @@ cont:
 	addi x3, x0, 0
 
 end:
-	nop
+	jalr x0, ra, 0
