@@ -390,12 +390,20 @@ void Itype(string opcode, int rd_decimal, string func3, int rs1_decimal, int imm
             if (immediate_decimal % 2 == 0)
             {
                 cout << "even address" << endl;
-                PC = (immediate_decimal >> 2); 
+                immediate_decimal = (immediate_decimal >> 2);
+                if(immediate_decimal < 0){
+                    immediate_decimal += 496;
+                }
+                PC += immediate_decimal;
             }
             else 
             {
                 cout << "odd address" << endl;
-                PC = (immediate_decimal >> 2) + 1;
+                immediate_decimal = (immediate_decimal >> 2) - 1;
+                if(immediate_decimal < 0){
+                    immediate_decimal += 496;
+                }
+                PC += immediate_decimal;
             }
         }
         cout << "jalr x" << rd_decimal << ", x" << rs1_decimal << ", " << PC << endl;
@@ -1247,7 +1255,7 @@ int main(int argc, char *argv[]) {
 
     // Test values
     register_arr[1] = 2389577;
-    register_arr[4] = -4;
+    register_arr[4] = 4;
     register_arr[3] = 2;
     register_arr[2] = 3;
     register_arr[9] = 3;
