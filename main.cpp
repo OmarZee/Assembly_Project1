@@ -152,8 +152,6 @@ string binaryArrayToString(const string binaryArray[], size_t size) {
                 return result;
             }
             result += c;
-            ecall_counter++;
-            cout << "ecall_counter = " << ecall_counter << endl;
         }
         
     }
@@ -449,15 +447,17 @@ void Itype(string opcode, int rd_decimal, string func3, int rs1_decimal, int imm
             if (immediate_decimal % 2 == 0)
             {
                 cout << "even address" << endl;
-                PC = (immediate_decimal >> 2); 
+                immediate_decimal = (immediate_decimal >> 2);
+                PC = register_arr[rs1_decimal] + immediate_decimal; 
             }
             else 
             {
                 cout << "odd address" << endl;
-                PC = (immediate_decimal >> 2) + 1;
+                immediate_decimal = (immediate_decimal >> 2) + 1;
+                PC = register_arr[rs1_decimal] + immediate_decimal;
             }
         }
-        cout << "jalr x" << rd_decimal << ", x" << rs1_decimal << ", " << PC << endl;
+        cout << "jalr x" << rd_decimal << ", x" << rs1_decimal << ", " << immediate_decimal << endl;
         cout << "The result of the jump: " << instruction_arr[PC] << endl;
     }
     else if (opcode == "1110011")
