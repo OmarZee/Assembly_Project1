@@ -12,6 +12,7 @@ string user_string;
 int register_arr[32];
 int PC=0;       // Program Counter
 int ecall_counter = 0;
+int int_ecall_counter = 0;
 string filename = "data.txt";
 
 int binaryToDecimal(string str)
@@ -152,7 +153,10 @@ string binaryArrayToString(const string binaryArray[], size_t size) {
                 return result;
             }
             result += c;
+            ecall_counter++;
+            cout << "ecall_counter = " << ecall_counter << endl;
         }
+        
     }
 
     return result;
@@ -452,32 +456,30 @@ void Itype(string opcode, int rd_decimal, string func3, int rs1_decimal, int imm
     else if (opcode == "1110011")
     {
         // ECALL
+        int address = 0;
             cout << "Register array = " << register_arr[10] << endl;
-            int address;
             if(register_arr[17] == 4){
                 register_arr[10] -= 268435456;
-                address = register_arr[10]/4 ;
+                address =  register_arr[10]/4;
                 string output = binaryArrayToString(data_arr + address, 16000 - address);
-                cout << "li a7, 4\n" << "ecall" << endl; 
                 cout << "The result of the print: " << output << endl;
             }
             else if(register_arr[17] == 1){
-                register_arr[10] = register_arr[10] - 268435441 + 16*ecall_counter;
-                address = register_arr[10]/4 ;
+                register_arr[10] = register_arr[10] - 268435456;
+                address = register_arr[10]/4 - 2;
                 cout << "The address = " << address << endl;
                 int int_output = binaryToSignedDecimal(data_arr[address]);
-                cout << "li a7, 1\n" << "ecall" << endl; 
                 cout << "The result of the print: " << int_output << endl;
             }
             else if(register_arr[17] == 10){
                 // terminate the program
-                cout << "li a7, 10\n" << "ecall" << endl; 
                 cout << "exiting the program";
                 exit(0);
             }
         cout << "The address = " << address << endl;
         cout << "The data = " << data_arr[address] << endl;
-        ecall_counter++;
+        //ecall_counter++;
+        int_ecall_counter++;
         PC++;
     }   
 }
@@ -1274,7 +1276,7 @@ int main(int argc, char *argv[]) {
 
     // Test values
     register_arr[1] = 2389577;
-    register_arr[4] = -4979967;
+    register_arr[4] = -4;
     register_arr[3] = 2;
     register_arr[2] = 3;
     register_arr[9] = 3;
