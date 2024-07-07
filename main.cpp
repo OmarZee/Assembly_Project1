@@ -112,47 +112,51 @@ string decimalToBinarySigned(int num){
     return binary;
 }
 
+// Function to reverse the characters in a 32-bit binary string
+string reverseCharacters(const string &binaryStr) {
+    if (binaryStr.length() != 32) {
+        cerr << "Invalid binary string length. Must be 32 bits." << endl;
+        return "";
+    }
+
+    string reversedBinaryStr;
+    for (int i = 24; i >= 0; i -= 8) {
+        string byteStr = binaryStr.substr(i, 8);
+        reversedBinaryStr += byteStr;
+    }
+
+    return reversedBinaryStr;
+}
+
+// Function to convert a binary string to ASCII character
 char binaryToAscii(const string &binaryString) {
     bitset<8> byte(binaryString);
     return static_cast<char>(byte.to_ulong());
 }
 
-// Decode binary file to a string
-string decodeBinaryFile(const string &filename) {
-    ifstream inFile(filename);
-    if (!inFile.is_open()) {
-        cerr << "Failed to open the file." << endl;
-        return "";
-    }
+// Function to convert the binary array to a string
+string binaryArrayToString(const string binaryArray[], size_t size) {
+    string result;
 
-    string line, decodedString;
-    while (getline(inFile, line)) {
-        if (line.length() != 32) {
-            cerr << "Invalid line length. Each line should be 32 bits." << endl;
+    for (size_t i = 0; i < size; ++i) {
+        string reversedBinStr = reverseCharacters(binaryArray[i]);
+        if (reversedBinStr.empty()) {
             continue;
         }
 
-        // Split the 32-bit line into 4 groups of 8 bits
-        vector<string> binaryLetters;
-        for (int i = 0; i < 32; i += 8) {
-            binaryLetters.push_back(line.substr(i, 8));
-        }
-
-        // Decode each 8-bit binary string to ASCII and reverse the order
-        string decodedBlock;
-        for (int i = 3; i >= 0; --i) {
-            char decodedChar = binaryToAscii(binaryLetters[i]);
-            if (decodedChar == '\0') {
-                return decodedString; // Stop if null terminator is found
+        for (int j = 0; j < 32; j += 8) {
+            string byteStr = reversedBinStr.substr(j, 8);
+            char c = binaryToAscii(byteStr);
+            if (c == '\0') {
+                return result;
             }
-            decodedBlock += decodedChar;
+            result += c;
         }
-
-        decodedString += decodedBlock;
     }
 
-    return decodedString;
+    return result;
 }
+
 
 // RTYPE
 void Rtype(string opcode, int rd_decimal, string func3, int rs1_decimal, int rs2_decimal, string func7)
@@ -448,9 +452,13 @@ void Itype(string opcode, int rd_decimal, string func3, int rs1_decimal, int imm
     {
         if (immediate_decimal == 0) // ecall
         {
-            register_arr[10] = register_arr[10] >> 12;
-            int address = register_arr[10]-16384;
-            string output = decodeBinaryFile(filename);
+            cout << "Register array = " << register_arr[10] << endl;
+            register_arr[10] -= 268435456;
+            int address = register_arr[10]/4;
+            cout << "The address = " << address << endl;
+            cout << "The data = " << data_arr[address] << endl;
+            string output = binaryArrayToString(data_arr + address, 16000 - address);
+            //string output = decodeBinaryFile(filename);
             if(register_arr[17] == 4){
                 cout << "The result of the print: " << output << endl;
             }
