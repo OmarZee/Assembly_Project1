@@ -11,6 +11,8 @@ string data_arr[16000];
 string user_string;
 int register_arr[32];
 int PC=0;       // Program Counter
+int ecall_counter = 0;
+string filename = "data.txt";
 
 int binaryToDecimal(string str)
 {
@@ -110,6 +112,52 @@ string decimalToBinarySigned(int num){
     }
     return binary;
 }
+
+// Function to reverse the characters in a 32-bit binary string
+string reverseCharacters(const string &binaryStr) {
+    if (binaryStr.length() != 32) {
+        cerr << "Invalid binary string length. Must be 32 bits." << endl;
+        return "";
+    }
+
+    string reversedBinaryStr;
+    for (int i = 24; i >= 0; i -= 8) {
+        string byteStr = binaryStr.substr(i, 8);
+        reversedBinaryStr += byteStr;
+    }
+
+    return reversedBinaryStr;
+}
+
+// Function to convert a binary string to ASCII character
+char binaryToAscii(const string &binaryString) {
+    bitset<8> byte(binaryString);
+    return static_cast<char>(byte.to_ulong());
+}
+
+// Function to convert the binary array to a string
+string binaryArrayToString(const string binaryArray[], size_t size) {
+    string result;
+
+    for (size_t i = 0; i < size; ++i) {
+        string reversedBinStr = reverseCharacters(binaryArray[i]);
+        if (reversedBinStr.empty()) {
+            continue;
+        }
+
+        for (int j = 0; j < 32; j += 8) {
+            string byteStr = reversedBinStr.substr(j, 8);
+            char c = binaryToAscii(byteStr);
+            if (c == '\0') {
+                return result;
+            }
+            result += c;
+        }
+    }
+
+    return result;
+}
+
 
 // RTYPE
 void Rtype(string opcode, int rd_decimal, string func3, int rs1_decimal, int rs2_decimal, string func7)
@@ -390,20 +438,12 @@ void Itype(string opcode, int rd_decimal, string func3, int rs1_decimal, int imm
             if (immediate_decimal % 2 == 0)
             {
                 cout << "even address" << endl;
-                immediate_decimal = (immediate_decimal >> 2);
-                if(immediate_decimal < 0){
-                    immediate_decimal += 496;
-                }
-                PC += immediate_decimal;
+                PC = (immediate_decimal >> 2); 
             }
             else 
             {
                 cout << "odd address" << endl;
-                immediate_decimal = (immediate_decimal >> 2) - 1;
-                if(immediate_decimal < 0){
-                    immediate_decimal += 496;
-                }
-                PC += immediate_decimal;
+                PC = (immediate_decimal >> 2) + 1;
             }
         }
         cout << "jalr x" << rd_decimal << ", x" << rs1_decimal << ", " << PC << endl;
@@ -411,23 +451,33 @@ void Itype(string opcode, int rd_decimal, string func3, int rs1_decimal, int imm
     }
     else if (opcode == "1110011")
     {
-        if (immediate_decimal == 0) // ecall
-        {
+        // ECALL
+            cout << "Register array = " << register_arr[10] << endl;
+            int address;
             if(register_arr[17] == 4){
-                cout << "The result of the print: " << to_string(register_arr[10]) << endl;
+                register_arr[10] -= 268435456;
+                address = register_arr[10]/4 ;
+                string output = binaryArrayToString(data_arr + address, 16000 - address);
+                cout << "li a7, 4\n" << "ecall" << endl; 
+                cout << "The result of the print: " << output << endl;
             }
             else if(register_arr[17] == 1){
-                cout << "The result of the print: " << register_arr[10] << endl;
+                register_arr[10] = register_arr[10] - 268435441 + 16*ecall_counter;
+                address = register_arr[10]/4 ;
+                cout << "The address = " << address << endl;
+                int int_output = binaryToSignedDecimal(data_arr[address]);
+                cout << "li a7, 1\n" << "ecall" << endl; 
+                cout << "The result of the print: " << int_output << endl;
             }
             else if(register_arr[17] == 10){
                 // terminate the program
+                cout << "li a7, 10\n" << "ecall" << endl; 
+                cout << "exiting the program";
                 exit(0);
             }
-        }
-        // else if (immediate_decimal == 1) //ebreak
-        // {
-
-        // }
+        cout << "The address = " << address << endl;
+        cout << "The data = " << data_arr[address] << endl;
+        ecall_counter++;
         PC++;
     }   
 }
@@ -737,37 +787,6 @@ void Utype(string opcode, int rd_decimal, string immediate)
     }
 }
 
-// // UTYPE
-// void Utype(string opcode, int rd_decimal, string immediate)
-// {
-//     // Ensure the immediate string has at least 32 bits by prepending zeros
-//     while (immediate.length() < 32) {
-//         immediate = "0" + immediate;
-//     }
-
-//     // Set the last 12 bits to '0'
-//     for (int i = 20; i < 32; i++) {
-//         immediate[i] = '0';
-//     }
-
-//     int immediate_decimal = binaryToUnsignedDecimal(immediate);
-//     immediate_decimal = immediate_decimal << 12;
-
-//     if (opcode == "0110111") // LUI
-//     {
-//         register_arr[rd_decimal] = immediate_decimal;
-//         cout << "lui x" << rd_decimal << ", " << immediate_decimal << endl;
-//         cout << "The result of the load: " << register_arr[rd_decimal] << endl;
-//     }
-//     else if (opcode == "0010111") // AUIPC
-//     {
-//         register_arr[rd_decimal] = PC + immediate_decimal;
-//         cout << "auipc x" << rd_decimal << ", " << immediate_decimal << endl;
-//         cout << "The result of the addition: " << register_arr[rd_decimal] << endl;
-//     }
-
-//     PC++;
-// }
 
 // JTYPE
 void Jtype(string opcode, int rd_decimal, int immediate_decimal)
@@ -1192,7 +1211,7 @@ unsigned char memory[65536]; // Define memory size
 int main(int argc, char *argv[]) {
     string str;
     int line_count = 0;
-    int data_counter = 16000;
+    int data_counter = 0;
     unsigned int instWord = 0;
     ifstream inFile;
     ofstream outFile;
@@ -1255,7 +1274,7 @@ int main(int argc, char *argv[]) {
 
     // Test values
     register_arr[1] = 2389577;
-    register_arr[4] = 4;
+    register_arr[4] = -4979967;
     register_arr[3] = 2;
     register_arr[2] = 3;
     register_arr[9] = 3;
@@ -1283,7 +1302,7 @@ int main(int argc, char *argv[]) {
     }
     data_counter = 0;
     while (getline(file2, line)) {
-        instruction_arr[data_counter] = line;
+        data_arr[data_counter] = line;
         cout << line << endl;
         data_counter++; // increment the data count
     }
@@ -1297,7 +1316,7 @@ int main(int argc, char *argv[]) {
         decode(str);
     }
 
-    cout << "*****************************************************************" << endl;
+    cout << "*" << endl;
 
     return 0;
 }
