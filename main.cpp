@@ -11,9 +11,8 @@ string data_arr[16000];
 string user_string;
 int register_arr[32];
 int PC=0;       // Program Counter
-int ecall_counter = 0;
-int int_ecall_counter = 0;
 string filename = "data.txt";
+bool auipc = false;
 
 int binaryToDecimal(string str)
 {
@@ -250,35 +249,43 @@ void Itype(string opcode, int rd_decimal, string func3, int rs1_decimal, int imm
     {
         if (func3 == "000") //func3 = 0
         {
-            if (rs1_decimal != 0)
-            {
-                if(rd_decimal == 2)
-                {
-                    register_arr[rd_decimal] = register_arr[rs1_decimal] + immediate_decimal/4;
-                }
-                else
-                {
-                    register_arr[rd_decimal] = register_arr[rs1_decimal] + immediate_decimal;  //ADDI
-                }
+            if(auipc == true){
+                register_arr[rd_decimal] = (register_arr[rd_decimal] + immediate_decimal)/4;
+                auipc = false;
                 cout << "addi x" << rd_decimal << ", x" << rs1_decimal << ", " << immediate_decimal << endl;
-                cout << "The result of the addition: " << register_arr[rd_decimal] << endl;
-                PC++;
+                    cout << "The result of the addition: " << register_arr[rd_decimal] << endl;
+                    PC++;
             }
-            else 
-            {
-                if(rd_decimal == 2)
+            else{
+                if (rs1_decimal != 0)
                 {
-                    register_arr[rd_decimal] = 0 + immediate_decimal;
+                    if(rd_decimal == 2)
+                    {
+                        register_arr[rd_decimal] = register_arr[rs1_decimal] + immediate_decimal/4;
+                    }
+                    else
+                    {
+                        register_arr[rd_decimal] = register_arr[rs1_decimal] + immediate_decimal;  //ADDI
+                    }
+                    cout << "addi x" << rd_decimal << ", x" << rs1_decimal << ", " << immediate_decimal << endl;
+                    cout << "The result of the addition: " << register_arr[rd_decimal] << endl;
+                    PC++;
                 }
-                else
+                else 
                 {
-                    register_arr[rd_decimal] = 0 + immediate_decimal;  //ADDI
+                    if(rd_decimal == 2)
+                    {
+                        register_arr[rd_decimal] = 0 + immediate_decimal;
+                    }
+                    else
+                    {
+                        register_arr[rd_decimal] = 0 + immediate_decimal;  //ADDI
+                    }
+                    cout << "addi x" << rd_decimal << ", x" << rs1_decimal << ", " << immediate_decimal << endl;
+                    cout << "The result of the addition: " << register_arr[rd_decimal] << endl;
+                    PC++;
                 }
-                cout << "addi x" << rd_decimal << ", x" << rs1_decimal << ", " << immediate_decimal << endl;
-                cout << "The result of the addition: " << register_arr[rd_decimal] << endl;
-                PC++;
             }
-            
         }
         else if (func3 == "010") //func3 = 2
         {
@@ -457,6 +464,7 @@ void Itype(string opcode, int rd_decimal, string func3, int rs1_decimal, int imm
     {
         // ECALL
         int address = 0;
+            register_arr[10] = register_arr[10] * 4;
             cout << "Register array = " << register_arr[10] << endl;
             if(register_arr[17] == 4){
                 register_arr[10] -= 268435456;
@@ -466,7 +474,7 @@ void Itype(string opcode, int rd_decimal, string func3, int rs1_decimal, int imm
             }
             else if(register_arr[17] == 1){
                 register_arr[10] = register_arr[10] - 268435456;
-                address = ecall_counter;
+                address =  register_arr[10]/4;
                 cout << "The address = " << address << endl;
                 int int_output = binaryToSignedDecimal(data_arr[address]);
                 cout << "The result of the print: " << int_output << endl;
@@ -478,7 +486,6 @@ void Itype(string opcode, int rd_decimal, string func3, int rs1_decimal, int imm
             }
         cout << "The address = " << address << endl;
         cout << "The data = " << data_arr[address] << endl;
-        ecall_counter++;
         PC++;
     }   
 }
@@ -781,9 +788,11 @@ void Utype(string opcode, int rd_decimal, string immediate)
         cout << "imm = " << immediate << endl;
         int immediate_decimal = binaryToUnsignedDecimal(immediate);
         immediate_decimal = immediate_decimal << 12;
-        register_arr[rd_decimal] = PC + immediate_decimal;
+        register_arr[rd_decimal] = (PC*4 + immediate_decimal);
+        //register_arr[rd_decimal] = register_arr[rd_decimal]/4;
         cout << "auipc x" << rd_decimal << ", " << immediate_decimal << endl;
         cout << "The result of the addition: " << register_arr[rd_decimal] << endl;
+        auipc = true;
         PC++;
     }
 }
@@ -1317,7 +1326,7 @@ int main(int argc, char *argv[]) {
         decode(str);
     }
 
-    cout << "*****************************************************************" << endl;
+    cout << "*" << endl;
 
     return 0;
 }
