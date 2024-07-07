@@ -11,6 +11,7 @@ string data_arr[16000];
 string user_string;
 int register_arr[32];
 int PC=0;       // Program Counter
+int ecall_counter = 0;
 string filename = "data.txt";
 
 int binaryToDecimal(string str)
@@ -450,33 +451,30 @@ void Itype(string opcode, int rd_decimal, string func3, int rs1_decimal, int imm
     }
     else if (opcode == "1110011")
     {
-        if (immediate_decimal == 0) // ecall
-        {
+        // ECALL
             cout << "Register array = " << register_arr[10] << endl;
-            register_arr[10] -= 268435456;
-            int address = register_arr[10]/4;
-            cout << "The address = " << address << endl;
-            cout << "The data = " << data_arr[address] << endl;
-            string output = binaryArrayToString(data_arr + address, 16000 - address);
-            //string output = decodeBinaryFile(filename);
+            int address;
             if(register_arr[17] == 4){
+                register_arr[10] -= 268435456;
+                address = register_arr[10]/4 ;
+                string output = binaryArrayToString(data_arr + address, 16000 - address);
                 cout << "The result of the print: " << output << endl;
             }
             else if(register_arr[17] == 1){
-                // register_arr[10] = register_arr[10] >> 12;
-                // int address = register_arr[10]-16384;
+                register_arr[10] = register_arr[10] - 268435441 + 16*ecall_counter;
+                address = register_arr[10]/4 ;
+                cout << "The address = " << address << endl;
                 int int_output = binaryToSignedDecimal(data_arr[address]);
                 cout << "The result of the print: " << int_output << endl;
             }
             else if(register_arr[17] == 10){
                 // terminate the program
+                cout << "exiting the program";
                 exit(0);
             }
-        }
-        // else if (immediate_decimal == 1) //ebreak
-        // {
-
-        // }
+        cout << "The address = " << address << endl;
+        cout << "The data = " << data_arr[address] << endl;
+        ecall_counter++;
         PC++;
     }   
 }
@@ -786,37 +784,6 @@ void Utype(string opcode, int rd_decimal, string immediate)
     }
 }
 
-// // UTYPE
-// void Utype(string opcode, int rd_decimal, string immediate)
-// {
-//     // Ensure the immediate string has at least 32 bits by prepending zeros
-//     while (immediate.length() < 32) {
-//         immediate = "0" + immediate;
-//     }
-
-//     // Set the last 12 bits to '0'
-//     for (int i = 20; i < 32; i++) {
-//         immediate[i] = '0';
-//     }
-
-//     int immediate_decimal = binaryToUnsignedDecimal(immediate);
-//     immediate_decimal = immediate_decimal << 12;
-
-//     if (opcode == "0110111") // LUI
-//     {
-//         register_arr[rd_decimal] = immediate_decimal;
-//         cout << "lui x" << rd_decimal << ", " << immediate_decimal << endl;
-//         cout << "The result of the load: " << register_arr[rd_decimal] << endl;
-//     }
-//     else if (opcode == "0010111") // AUIPC
-//     {
-//         register_arr[rd_decimal] = PC + immediate_decimal;
-//         cout << "auipc x" << rd_decimal << ", " << immediate_decimal << endl;
-//         cout << "The result of the addition: " << register_arr[rd_decimal] << endl;
-//     }
-
-//     PC++;
-// }
 
 // JTYPE
 void Jtype(string opcode, int rd_decimal, int immediate_decimal)
