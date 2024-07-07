@@ -12,6 +12,7 @@ string user_string;
 int register_arr[32];
 int PC=0;       // Program Counter
 int ecall_counter = 0;
+int int_ecall_counter = 0;
 string filename = "data.txt";
 
 int binaryToDecimal(string str)
@@ -152,7 +153,10 @@ string binaryArrayToString(const string binaryArray[], size_t size) {
                 return result;
             }
             result += c;
+            ecall_counter++;
+            cout << "ecall_counter = " << ecall_counter << endl;
         }
+        
     }
 
     return result;
@@ -452,17 +456,17 @@ void Itype(string opcode, int rd_decimal, string func3, int rs1_decimal, int imm
     else if (opcode == "1110011")
     {
         // ECALL
+        int address = 0;
             cout << "Register array = " << register_arr[10] << endl;
-            int address;
             if(register_arr[17] == 4){
                 register_arr[10] -= 268435456;
-                address = register_arr[10]/4 ;
+                address =  register_arr[10]/4;
                 string output = binaryArrayToString(data_arr + address, 16000 - address);
                 cout << "The result of the print: " << output << endl;
             }
             else if(register_arr[17] == 1){
-                register_arr[10] = register_arr[10] - 268435441 + 16*ecall_counter;
-                address = register_arr[10]/4 ;
+                register_arr[10] = register_arr[10] - 268435456;
+                address = register_arr[10]/4 - 2;
                 cout << "The address = " << address << endl;
                 int int_output = binaryToSignedDecimal(data_arr[address]);
                 cout << "The result of the print: " << int_output << endl;
@@ -474,7 +478,8 @@ void Itype(string opcode, int rd_decimal, string func3, int rs1_decimal, int imm
             }
         cout << "The address = " << address << endl;
         cout << "The data = " << data_arr[address] << endl;
-        ecall_counter++;
+        //ecall_counter++;
+        int_ecall_counter++;
         PC++;
     }   
 }
