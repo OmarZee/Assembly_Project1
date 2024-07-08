@@ -430,12 +430,14 @@ void Itype(string opcode, int rd_decimal, string func3, int rs1_decimal, int imm
                 address =  register_arr[10]/4;
                 string output = binaryArrayToString(data_arr + address, 16000 - address);
                 cout << "li a7, 4\n" << "ecall\n";
+                cout << "The result of the print: " << output << endl;
             }
             else if(register_arr[17] == 1){
                 register_arr[10] = register_arr[10] - 268435456;
                 address =  register_arr[10]/4;
                 int int_output = binaryToSignedDecimal(data_arr[address]);
                 cout << "li a7, 1\n" << "ecall\n";
+                cout << "The result of the print: " << int_output << endl;
             }
             else if(register_arr[17] == 10){
                 // terminate the program
