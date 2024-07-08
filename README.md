@@ -25,6 +25,10 @@ We had many challenges in comparing the immediates to the right machine code in 
 In various parts of the code, bit manipulation is done directly on strings. It might subjected to error if the value is incorrect.
 We faced a challenge in the U-type as our memory held 4 bytes in each index which made the accurate calculations of addresses to be stored for ecalls very challenging. None of the ecalls were working until we figured out an equation to handle addresses properly
 
+Limitations:
+Compressed functions are not supported.
+The stack pointer seems to be causing infinite loops as it is implemented incorrectly
+
 
 
 
