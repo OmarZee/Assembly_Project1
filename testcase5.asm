@@ -1,3 +1,4 @@
+.text
 lhu x5, 0(x1)
 sh x6, 4(x1)
 lbu x5, 0(x1)
